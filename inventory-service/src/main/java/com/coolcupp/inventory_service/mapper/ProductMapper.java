@@ -4,7 +4,6 @@ import com.coolcupp.inventory_service.dto.ProductRequestDTO;
 import com.coolcupp.inventory_service.dto.ProductResponseDTO;
 import com.coolcupp.inventory_service.model.Product;
 import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
 
 import java.util.List;
 

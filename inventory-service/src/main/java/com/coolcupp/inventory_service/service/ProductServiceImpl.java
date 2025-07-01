@@ -22,6 +22,7 @@ public class ProductServiceImpl implements ProductService {
         this.productMapper = productMapper;
     }
 
+
     @Override
     public ResponseEntity<?> getAllProducts() {
         List<Product> products = productRepository.findAll();
@@ -32,6 +33,7 @@ public class ProductServiceImpl implements ProductService {
         return new ResponseEntity<>(productMapper.toResponseDTOList(products), HttpStatus.OK);
     }
 
+
     @Override
     public ResponseEntity<?> getProductById(Integer id) {
         if (!productRepository.existsById(id)) {
@@ -41,12 +43,14 @@ public class ProductServiceImpl implements ProductService {
         return new ResponseEntity<>(productMapper.toResponseDTO(productRepository.findById(id).get()), HttpStatus.OK);
     }
 
+
     @Override
     public ResponseEntity<?> createNewProduct(ProductRequestDTO productRequestDTO) {
         Product product = productMapper.toEntityFromRequestDTO(productRequestDTO);
         productRepository.save(product);
         return new ResponseEntity<>(productMapper.toResponseDTO(product), HttpStatus.CREATED);
     }
+
 
     @Override
     public ResponseEntity<?> deleteProductById(Integer id) {
