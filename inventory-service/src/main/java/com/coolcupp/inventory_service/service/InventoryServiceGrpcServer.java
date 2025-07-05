@@ -28,6 +28,7 @@ public class InventoryServiceGrpcServer extends InventoryServiceGrpc.InventorySe
             responseObserver.onError(Status.NOT_FOUND
                     .withDescription("product with id " + request.getId() + " not found")
                     .asRuntimeException());
+            return;
         }
 
         ProductResponse response = ProductResponse.newBuilder()
@@ -37,8 +38,6 @@ public class InventoryServiceGrpcServer extends InventoryServiceGrpc.InventorySe
                 .setPrice(product.getPrice().toString())
                 .setDiscountPercent(product.getDiscountPercent().toString())
                 .build();
-
-        System.out.println(response);
 
         responseObserver.onNext(response);
         responseObserver.onCompleted();

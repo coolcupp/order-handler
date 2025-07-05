@@ -1,18 +1,20 @@
-package com.coolcupp.order_service.model;
+package com.coolcupp.order_service.dto;
 
 import java.util.Objects;
 
-public class AppUserResponseDTO {
+public class AppUserRequestDTO {
 
     private String username;
+    private String password;
     private String email;
     private String role;
 
-    public AppUserResponseDTO() {
+    public AppUserRequestDTO() {
     }
 
-    public AppUserResponseDTO(String username, String email, String role) {
+    public AppUserRequestDTO(String username, String password, String email, String role) {
         this.username = username;
+        this.password = password;
         this.email = email;
         this.role = role;
     }
@@ -23,6 +25,14 @@ public class AppUserResponseDTO {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getEmail() {
@@ -45,19 +55,20 @@ public class AppUserResponseDTO {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        AppUserResponseDTO that = (AppUserResponseDTO) o;
-        return Objects.equals(username, that.username) && Objects.equals(email, that.email) && Objects.equals(role, that.role);
+        AppUserRequestDTO that = (AppUserRequestDTO) o;
+        return Objects.equals(username, that.username) && Objects.equals(password, that.password) && Objects.equals(email, that.email) && Objects.equals(role, that.role);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(username, email, role);
+        return Objects.hash(username, password, email, role);
     }
 
     @Override
     public String toString() {
-        return "AppUserResponseDTO{" +
+        return "AppUserRequestDTO{" +
                 "username='" + username + '\'' +
+                ", password='" + password + '\'' +
                 ", email='" + email + '\'' +
                 ", role='" + role + '\'' +
                 '}';

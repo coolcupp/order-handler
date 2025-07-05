@@ -1,7 +1,6 @@
 package com.coolcupp.order_service.service;
 
-import com.coolcupp.order_service.model.AppUser;
-import com.coolcupp.order_service.model.AppUserRequestDTO;
+import com.coolcupp.order_service.dto.AppUserRequestDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 

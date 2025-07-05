@@ -1,9 +1,8 @@
-package com.coolcupp.order_service.model;
+package com.coolcupp.order_service.dto;
 
-import java.math.BigDecimal;
 import java.util.Objects;
 
-public class ProductResponseDTO {
+public class ProductResponseGrpcDTO {
 
     private Integer productId;
     private String name;
@@ -11,7 +10,7 @@ public class ProductResponseDTO {
     private String price;
     private String discountPercent;
 
-    public ProductResponseDTO(Integer productId, String name, Integer quantity, String price, String discountPercent) {
+    public ProductResponseGrpcDTO(Integer productId, String name, Integer quantity, String price, String discountPercent) {
         this.productId = productId;
         this.name = name;
         this.quantity = quantity;
@@ -19,7 +18,7 @@ public class ProductResponseDTO {
         this.discountPercent = discountPercent;
     }
 
-    public ProductResponseDTO() {
+    public ProductResponseGrpcDTO() {
     }
 
     public Integer getProductId() {
@@ -66,7 +65,7 @@ public class ProductResponseDTO {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ProductResponseDTO that = (ProductResponseDTO) o;
+        ProductResponseGrpcDTO that = (ProductResponseGrpcDTO) o;
         return Objects.equals(productId, that.productId) && Objects.equals(name, that.name) && Objects.equals(quantity, that.quantity) && Objects.equals(price, that.price) && Objects.equals(discountPercent, that.discountPercent);
     }
 
@@ -77,7 +76,7 @@ public class ProductResponseDTO {
 
     @Override
     public String toString() {
-        return "ProductResponseDTO{" +
+        return "ProductResponseGrpcDTO{" +
                 "productId=" + productId +
                 ", name='" + name + '\'' +
                 ", quantity=" + quantity +

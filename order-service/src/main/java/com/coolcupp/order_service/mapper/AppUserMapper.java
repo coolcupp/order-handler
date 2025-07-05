@@ -1,8 +1,8 @@
 package com.coolcupp.order_service.mapper;
 
 import com.coolcupp.order_service.model.AppUser;
-import com.coolcupp.order_service.model.AppUserRequestDTO;
-import com.coolcupp.order_service.model.AppUserResponseDTO;
+import com.coolcupp.order_service.dto.AppUserRequestDTO;
+import com.coolcupp.order_service.dto.AppUserResponseDTO;
 import org.mapstruct.Mapper;
 
 import java.util.List;

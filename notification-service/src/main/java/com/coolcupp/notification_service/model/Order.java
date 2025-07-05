@@ -1,7 +1,6 @@
 package com.coolcupp.notification_service.model;
 
 import jakarta.persistence.*;
-import org.antlr.v4.runtime.misc.NotNull;
 
 import java.math.BigDecimal;
 import java.util.Objects;
