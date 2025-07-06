@@ -3,6 +3,8 @@ package com.coolcupp.notification_service.service;
 import com.coolcupp.notification_service.mapper.OrderMapper;
 import com.coolcupp.notification_service.model.Order;
 import com.coolcupp.notification_service.repository.OrderRepository;
+import com.coolcupp.order_service.event.CreateOrderEvent;
+import com.coolcupp.order_service.event.OrderItemEvent;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -45,5 +47,25 @@ public class OrderServiceImpl implements OrderService {
             return new ResponseEntity<>("Orders not found", HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(orderMapper.toOrderResponseDTOList(orders), HttpStatus.OK);
+    }
+
+    @Override
+    public String createNewOrder(CreateOrderEvent createOrderEvent) {
+        List<OrderItemEvent> orderItems = createOrderEvent.getOrderItems();
+        Integer orderId = createOrderEvent.getOrderId();
+        Integer userId = createOrderEvent.getUserId();
+
+        for (OrderItemEvent orderItem : orderItems) {
+            Order order = new Order();
+            order.setOrderId(orderId);
+            order.setProductId(orderItem.getProductId());
+            order.setUserId(userId);
+            order.setQuantity(orderItem.getQuantityToOrder());
+            order.setPrice(orderItem.getProductPrice());
+            order.setDiscountPercent(orderItem.getDiscountPercent());
+            order.setTotalPrice(orderItem.getTotalPrice());
+            orderRepository.save(order);
+        }
+        return "SAVED SUCCESSFULLY";
     }
 }
