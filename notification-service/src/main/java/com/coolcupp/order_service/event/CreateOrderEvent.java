@@ -1,4 +1,4 @@
-package com.coolcupp.notification_service.event;
+package com.coolcupp.order_service.event;
 
 import java.util.List;
 import java.util.Objects;

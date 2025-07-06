@@ -1,4 +1,4 @@
-package com.coolcupp.notification_service.event;
+package com.coolcupp.order_service.event;
 
 import java.math.BigDecimal;
 import java.util.Objects;
