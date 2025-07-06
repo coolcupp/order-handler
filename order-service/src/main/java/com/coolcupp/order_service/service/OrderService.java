@@ -1,10 +1,10 @@
 package com.coolcupp.order_service.service;
 
-import com.coolcupp.order_service.dto.OrderRequestDTO;
+import com.coolcupp.order_service.dto.OrderDTO.CreateOrderDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
 public interface OrderService {
-    ResponseEntity<?> createNewOrder(OrderRequestDTO orderRequestDTO);
+    ResponseEntity<?> createNewOrder(CreateOrderDTO orderRequestDTO);
 }

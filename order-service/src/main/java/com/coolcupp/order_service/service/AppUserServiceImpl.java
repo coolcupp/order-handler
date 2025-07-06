@@ -2,7 +2,7 @@ package com.coolcupp.order_service.service;
 
 import com.coolcupp.order_service.mapper.AppUserMapper;
 import com.coolcupp.order_service.model.AppUser;
-import com.coolcupp.order_service.dto.AppUserRequestDTO;
+import com.coolcupp.order_service.dto.AppUserDTO.AppUserRequestDTO;
 import com.coolcupp.order_service.repository.AppUserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

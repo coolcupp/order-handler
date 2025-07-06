@@ -1,8 +1,8 @@
-package com.coolcupp.order_service.dto;
+package com.coolcupp.order_service.dto.grpcDTO;
 
 import java.util.Objects;
 
-public class ProductResponseGrpcDTO {
+public class ProductAvailabilityResponseDTO {
 
     private Integer productId;
     private String name;
@@ -10,7 +10,7 @@ public class ProductResponseGrpcDTO {
     private String price;
     private String discountPercent;
 
-    public ProductResponseGrpcDTO(Integer productId, String name, Integer quantity, String price, String discountPercent) {
+    public ProductAvailabilityResponseDTO(Integer productId, String name, Integer quantity, String price, String discountPercent) {
         this.productId = productId;
         this.name = name;
         this.quantity = quantity;
@@ -18,7 +18,7 @@ public class ProductResponseGrpcDTO {
         this.discountPercent = discountPercent;
     }
 
-    public ProductResponseGrpcDTO() {
+    public ProductAvailabilityResponseDTO() {
     }
 
     public Integer getProductId() {
@@ -65,7 +65,7 @@ public class ProductResponseGrpcDTO {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ProductResponseGrpcDTO that = (ProductResponseGrpcDTO) o;
+        ProductAvailabilityResponseDTO that = (ProductAvailabilityResponseDTO) o;
         return Objects.equals(productId, that.productId) && Objects.equals(name, that.name) && Objects.equals(quantity, that.quantity) && Objects.equals(price, that.price) && Objects.equals(discountPercent, that.discountPercent);
     }
 
@@ -76,7 +76,7 @@ public class ProductResponseGrpcDTO {
 
     @Override
     public String toString() {
-        return "ProductResponseGrpcDTO{" +
+        return "ProductAvailabilityResponseDTO{" +
                 "productId=" + productId +
                 ", name='" + name + '\'' +
                 ", quantity=" + quantity +

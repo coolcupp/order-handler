@@ -1,16 +1,16 @@
-package com.coolcupp.order_service.dto;
+package com.coolcupp.order_service.dto.OrderDTO;
 
 import java.util.List;
 import java.util.Objects;
 
-public class OrderRequestDTO {
+public class CreateOrderDTO {
     // TODO user id from auth
     private List<OrderItemDTO> orderItems;
 
-    public OrderRequestDTO() {
+    public CreateOrderDTO() {
     }
 
-    public OrderRequestDTO(List<OrderItemDTO> orderItems) {
+    public CreateOrderDTO(List<OrderItemDTO> orderItems) {
         this.orderItems = orderItems;
     }
 
@@ -26,7 +26,7 @@ public class OrderRequestDTO {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        OrderRequestDTO that = (OrderRequestDTO) o;
+        CreateOrderDTO that = (CreateOrderDTO) o;
         return Objects.equals(orderItems, that.orderItems);
     }
 
@@ -37,7 +37,7 @@ public class OrderRequestDTO {
 
     @Override
     public String toString() {
-        return "OrderRequestDTO{" +
+        return "CreateOrderDTO{" +
                 "orderItems=" + orderItems +
                 '}';
     }

@@ -1,7 +1,6 @@
 package com.coolcupp.order_service.controller;
 
-import com.coolcupp.order_service.dto.OrderRequestDTO;
-import com.coolcupp.order_service.grpc.InventoryServiceGrpcClient;
+import com.coolcupp.order_service.dto.OrderDTO.CreateOrderDTO;
 import com.coolcupp.order_service.service.OrderServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,15 +15,9 @@ public class OrderController {
         this.orderService = orderService;
     }
 
-//    // test GRPC method
-//    @GetMapping("order/{productId}")
-//    public ProductResponseGrpcDTO checkAvailability(@PathVariable("productId") Integer productId) {
-//        return inventoryServiceGrpcClient.checkAvailability(productId);
-//    }
-
     @PostMapping("orders")
-    public ResponseEntity<?> createNewOrder(@RequestBody OrderRequestDTO orderRequestDTO) {
-        return orderService.createNewOrder(orderRequestDTO);
+    public ResponseEntity<?> createNewOrder(@RequestBody CreateOrderDTO createOrderDTO) {
+        return orderService.createNewOrder(createOrderDTO);
     }
 
 }

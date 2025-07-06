@@ -1,6 +1,6 @@
 package com.coolcupp.order_service.controller;
 
-import com.coolcupp.order_service.dto.AppUserRequestDTO;
+import com.coolcupp.order_service.dto.AppUserDTO.AppUserRequestDTO;
 import com.coolcupp.order_service.service.AppUserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

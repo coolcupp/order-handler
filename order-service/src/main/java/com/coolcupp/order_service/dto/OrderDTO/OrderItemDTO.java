@@ -1,4 +1,4 @@
-package com.coolcupp.order_service.dto;
+package com.coolcupp.order_service.dto.OrderDTO;
 
 import java.util.Objects;
 
