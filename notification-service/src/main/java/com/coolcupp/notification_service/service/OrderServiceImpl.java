@@ -1,10 +1,10 @@
 package com.coolcupp.notification_service.service;
 
+import com.coolcupp.common_lib.event.CreateOrderEvent;
+import com.coolcupp.common_lib.event.OrderItemEvent;
 import com.coolcupp.notification_service.mapper.OrderMapper;
 import com.coolcupp.notification_service.model.Order;
 import com.coolcupp.notification_service.repository.OrderRepository;
-import com.coolcupp.order_service.event.CreateOrderEvent;
-import com.coolcupp.order_service.event.OrderItemEvent;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;

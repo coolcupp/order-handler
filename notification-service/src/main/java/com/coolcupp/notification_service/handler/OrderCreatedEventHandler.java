@@ -1,7 +1,7 @@
 package com.coolcupp.notification_service.handler;
 
+import com.coolcupp.common_lib.event.CreateOrderEvent;
 import com.coolcupp.notification_service.service.OrderService;
-import com.coolcupp.order_service.event.CreateOrderEvent;
 import org.springframework.kafka.annotation.KafkaHandler;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;

@@ -1,11 +1,13 @@
 package com.coolcupp.order_service.service;
 
+import com.coolcupp.common_lib.event.CreateOrderEvent;
+import com.coolcupp.common_lib.event.OrderItemEvent;
+
 import com.coolcupp.order_service.dto.OrderDTO.OrderItemDTO;
 import com.coolcupp.order_service.dto.OrderDTO.CreateOrderDTO;
 import com.coolcupp.order_service.dto.grpcDTO.ProductAvailabilityResponseDTO;
-import com.coolcupp.order_service.event.CreateOrderEvent;
-import com.coolcupp.order_service.event.OrderItemEvent;
 import com.coolcupp.order_service.service.grpc.InventoryServiceGrpcClient;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
