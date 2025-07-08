@@ -1,17 +1,21 @@
 package com.coolcupp.notification_service.service;
 
 import com.coolcupp.common_lib.event.CreateOrderEvent;
+import com.coolcupp.notification_service.dto.OrderItemResponseDTO;
+import com.coolcupp.notification_service.dto.OrderResponseDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public interface OrderService {
 
-    ResponseEntity<?> getAllOrders();
+    ResponseEntity<List<OrderResponseDTO>> getAllOrders();
 
-    ResponseEntity<?> getOrdersByOrderId(Integer orderId);
+    ResponseEntity<List<OrderItemResponseDTO>> getOrderItemsByOrderId(Long orderId);
 
-    ResponseEntity<?> getOrdersByUserId(Integer userId);
+    ResponseEntity<List<OrderItemResponseDTO>> getOrderItemsByUserId(Long userId);
 
-    String createNewOrder(CreateOrderEvent createOrderEvent);
+//    String createNewOrder(CreateOrderEvent createOrderEvent);
 }

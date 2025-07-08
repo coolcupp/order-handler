@@ -19,7 +19,7 @@ public class OrderCreatedEventHandler {
     @KafkaHandler
     public void handle(CreateOrderEvent createOrderEvent) {
         System.out.println(createOrderEvent);
-        orderService.createNewOrder(createOrderEvent);
+//        orderService.createNewOrder(createOrderEvent);
     }
 
 }
