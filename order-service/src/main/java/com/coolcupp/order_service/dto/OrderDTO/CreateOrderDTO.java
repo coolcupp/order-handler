@@ -2,16 +2,37 @@ package com.coolcupp.order_service.dto.OrderDTO;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 public class CreateOrderDTO {
-    // TODO user id from auth
+
+    private UUID orderId;
+    private Long userId = 123L; // todo getting from security
     private List<OrderItemDTO> orderItems;
 
     public CreateOrderDTO() {
     }
 
-    public CreateOrderDTO(List<OrderItemDTO> orderItems) {
+    public CreateOrderDTO(UUID orderId, Long userId, List<OrderItemDTO> orderItems) {
+        this.orderId = orderId;
+        this.userId = userId;
         this.orderItems = orderItems;
+    }
+
+    public UUID getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(UUID orderId) {
+        this.orderId = orderId;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public List<OrderItemDTO> getOrderItems() {
@@ -27,18 +48,20 @@ public class CreateOrderDTO {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         CreateOrderDTO that = (CreateOrderDTO) o;
-        return Objects.equals(orderItems, that.orderItems);
+        return Objects.equals(orderId, that.orderId) && Objects.equals(userId, that.userId) && Objects.equals(orderItems, that.orderItems);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(orderItems);
+        return Objects.hash(orderId, userId, orderItems);
     }
 
     @Override
     public String toString() {
         return "CreateOrderDTO{" +
-                "orderItems=" + orderItems +
+                "orderId=" + orderId +
+                ", userId=" + userId +
+                ", orderItems=" + orderItems +
                 '}';
     }
 }
