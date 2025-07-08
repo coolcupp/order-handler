@@ -1,19 +1,22 @@
 package com.coolcupp.order_service.service;
 
 import com.coolcupp.order_service.dto.AppUserDTO.AppUserRequestDTO;
+import com.coolcupp.order_service.dto.AppUserDTO.AppUserResponseDTO;
+import com.coolcupp.order_service.model.AppUser;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public interface AppUserService {
-    ResponseEntity<?> getAllAppUsers();
+    ResponseEntity<List<AppUserResponseDTO>> getAllAppUsers();
 
-    ResponseEntity<?> getAppUserById(Integer id);
+    ResponseEntity<AppUserResponseDTO> getAppUserById(Long id);
 
-    ResponseEntity<?> createAppUser(AppUserRequestDTO appUserRequestDTO);
+    ResponseEntity<AppUserResponseDTO> createAppUser(AppUserRequestDTO appUserRequestDTO);
 
-    ResponseEntity<?> deleteAppUserById(Integer id);
+    ResponseEntity<AppUserResponseDTO> deleteAppUserById(Long id);
 
-    ResponseEntity<?> updateAppUserById(Integer id, AppUserRequestDTO appUserRequestDTO);
-
+    ResponseEntity<AppUserResponseDTO> updateAppUserById(Long id, AppUserRequestDTO appUserRequestDTO);
 }

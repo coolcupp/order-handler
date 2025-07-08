@@ -1,8 +1,8 @@
 package com.coolcupp.order_service.service;
 
-import com.coolcupp.order_service.mapper.AppUserMapper;
-import com.coolcupp.order_service.model.AppUser;
 import com.coolcupp.order_service.dto.AppUserDTO.AppUserRequestDTO;
+import com.coolcupp.order_service.dto.AppUserDTO.AppUserResponseDTO;
+import com.coolcupp.order_service.model.AppUser;
 import com.coolcupp.order_service.repository.AppUserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,68 +14,110 @@ import java.util.List;
 public class AppUserServiceImpl implements AppUserService {
 
     private final AppUserRepository appUserRepository;
-    private final AppUserMapper appUserMapper;
 
-    public AppUserServiceImpl(AppUserRepository appUserRepository, AppUserMapper appUserMapper) {
+    public AppUserServiceImpl(AppUserRepository appUserRepository) {
         this.appUserRepository = appUserRepository;
-        this.appUserMapper = appUserMapper;
     }
 
 
     @Override
-    public ResponseEntity<?> getAllAppUsers() {
+    public ResponseEntity<List<AppUserResponseDTO>> getAllAppUsers() {
         List<AppUser> appUsers = appUserRepository.findAll();
         if (appUsers.isEmpty()) {
-            return new ResponseEntity<>("Users not found", HttpStatus.NO_CONTENT);
+            System.out.println("Пизда, ничего нету");
+            // todo throw custom exception
+            // return new ResponseEntity<>("Users not found", HttpStatus.NO_CONTENT);
         }
-        return new ResponseEntity<>(appUserMapper.toResponseDTOList(appUsers), HttpStatus.OK);
+        // list of app users -> list of app user dto's
+        List<AppUserResponseDTO> appUserResponseDTOList = appUsers.stream()
+                .map(appUser -> new AppUserResponseDTO(
+                        appUser.getId(),
+                        appUser.getUsername(),
+                        appUser.getEmail(),
+                        appUser.getRole()
+                ))
+                .toList();
+        return new ResponseEntity<>(appUserResponseDTOList, HttpStatus.OK);
     }
 
 
     @Override
-    public ResponseEntity<?> getAppUserById(Integer id) {
+    public ResponseEntity<AppUserResponseDTO> getAppUserById(Long id) {
         if (!appUserRepository.existsById(id)) {
-            return new ResponseEntity<>("User with id " + id + " not found", HttpStatus.NOT_FOUND);
+            System.out.println("Пизда, ничего нету.");
+            // todo throw custom exception
+            // return new ResponseEntity<>("User with id " + id + " not found", HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(appUserMapper.toResponseDTO(appUserRepository.findById(id).get()), HttpStatus.OK);
+        // app user -> appUserDTO
+        AppUser appUser = appUserRepository.findById(id).get();
+        AppUserResponseDTO appUserResponseDTO = new AppUserResponseDTO(
+                appUser.getId(),
+                appUser.getUsername(),
+                appUser.getEmail(),
+                appUser.getRole()
+        );
+        return new ResponseEntity<>(appUserResponseDTO, HttpStatus.OK);
     }
 
 
     @Override
-    public ResponseEntity<?> createAppUser(AppUserRequestDTO appUserRequestDTO) {
-        AppUser appUser = appUserMapper.toEntity(appUserRequestDTO);
+    public ResponseEntity<AppUserResponseDTO> createAppUser(AppUserRequestDTO appUserRequestDTO) {
+        AppUser appUser = new AppUser(
+                appUserRequestDTO.getUsername(),
+                appUserRequestDTO.getPassword(),
+                appUserRequestDTO.getEmail(),
+                appUserRequestDTO.getRole()
+        );
         appUserRepository.save(appUser);
-        return new ResponseEntity<>(appUserMapper.toResponseDTO(appUser), HttpStatus.CREATED);
+        AppUserResponseDTO appUserResponseDTO = new AppUserResponseDTO(
+                appUser.getId(),
+                appUser.getUsername(),
+                appUser.getEmail(),
+                appUser.getRole()
+        );
+        return new ResponseEntity<>(appUserResponseDTO, HttpStatus.OK);
     }
 
 
     @Override
-    public ResponseEntity<?> deleteAppUserById(Integer id) {
+    public ResponseEntity<AppUserResponseDTO> deleteAppUserById(Long id) {
         if (!appUserRepository.existsById(id)) {
-            return new ResponseEntity<>("User with id " + id + " not found", HttpStatus.NOT_FOUND);
+            System.out.println("Пизда, ничего нету");
+            // todo throw custom exception
+            // return new ResponseEntity<>("User with id " + id + " not found", HttpStatus.NOT_FOUND);
         }
+        AppUser appUser = appUserRepository.findById(id).get();
         appUserRepository.deleteById(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+        AppUserResponseDTO appUserResponseDTO = new AppUserResponseDTO(
+                appUser.getId(),
+                appUser.getUsername(),
+                appUser.getEmail(),
+                appUser.getRole()
+        );
+        return new ResponseEntity<>(appUserResponseDTO, HttpStatus.OK);
     }
 
 
     @Override
-    public ResponseEntity<?> updateAppUserById(Integer id, AppUserRequestDTO appUserRequestDTO) {
+    public ResponseEntity<AppUserResponseDTO> updateAppUserById(Long id, AppUserRequestDTO appUserRequestDTO) {
         if (!appUserRepository.existsById(id)) {
-            return new ResponseEntity<>("User with id " + id + " not found", HttpStatus.NOT_FOUND);
+            System.out.println("Пиздец, не найдено");
+            // todo throw custom exception
+            // return new ResponseEntity<>("User with id " + id + " not found", HttpStatus.NOT_FOUND);
         }
-
         AppUser appUserFromDb = appUserRepository.findById(id).get();
-
-        appUserFromDb.setId(id);
         appUserFromDb.setUsername(appUserRequestDTO.getUsername());
         appUserFromDb.setPassword(appUserRequestDTO.getPassword());
         appUserFromDb.setEmail(appUserRequestDTO.getEmail());
         appUserFromDb.setRole(appUserRequestDTO.getRole());
 
         appUserRepository.save(appUserFromDb);
-        return new ResponseEntity<>(appUserMapper.toResponseDTO(appUserFromDb), HttpStatus.OK);
+        AppUserResponseDTO appUserResponseDTO = new AppUserResponseDTO(
+                appUserFromDb.getId(),
+                appUserFromDb.getUsername(),
+                appUserFromDb.getEmail(),
+                appUserFromDb.getRole()
+        );
+        return new ResponseEntity<>(appUserResponseDTO, HttpStatus.OK);
     }
-
-
 }

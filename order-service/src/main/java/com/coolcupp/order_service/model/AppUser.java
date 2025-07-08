@@ -11,7 +11,7 @@ public class AppUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Integer id;
+    private Long id;
 
     @Column(name = "username", nullable = false)
     private String username;
@@ -28,19 +28,18 @@ public class AppUser {
     public AppUser() {
     }
 
-    public AppUser(Integer id, String username, String password, String email, String role) {
-        this.id = id;
+    public AppUser(String username, String password, String email, String role) {
         this.username = username;
         this.password = password;
         this.email = email;
         this.role = role;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
