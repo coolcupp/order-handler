@@ -2,63 +2,111 @@ package com.coolcupp.inventory_service.service;
 
 import com.coolcupp.inventory_service.dto.ProductRequestDTO;
 import com.coolcupp.inventory_service.dto.ProductResponseDTO;
-import com.coolcupp.inventory_service.mapper.ProductMapper;
 import com.coolcupp.inventory_service.model.Product;
 import com.coolcupp.inventory_service.repository.ProductRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
-    private final ProductMapper productMapper;
 
-    public ProductServiceImpl(ProductRepository productRepository, ProductMapper productMapper) {
+    public ProductServiceImpl(ProductRepository productRepository) {
         this.productRepository = productRepository;
-        this.productMapper = productMapper;
     }
 
 
     @Override
-    public ResponseEntity<?> getAllProducts() {
+    public ResponseEntity<List<ProductResponseDTO>> getAllProducts() {
         List<Product> products = productRepository.findAll();
+
         if (products.isEmpty()) {
-            return new ResponseEntity<>("Products not found", HttpStatus.NO_CONTENT);
+            System.out.println("пизда всё пустое");
+            // todo throw custom exception
+            // return new ResponseEntity<>("Products not found", HttpStatus.NO_CONTENT);
         }
 
-        return new ResponseEntity<>(productMapper.toResponseDTOList(products), HttpStatus.OK);
+        // list of products -> list of product dto
+        List<ProductResponseDTO> productResponseDTOList = products.stream()
+                .map(product -> new ProductResponseDTO(
+                        product.getId(),
+                        product.getName(),
+                        product.getQuantity(),
+                        product.getPrice(),
+                        product.getDiscountPercent()
+                ))
+                .toList();
+
+        return new ResponseEntity<>(productResponseDTOList, HttpStatus.OK);
     }
 
 
     @Override
-    public ResponseEntity<?> getProductById(Integer id) {
-        if (!productRepository.existsById(id)) {
-            return new ResponseEntity<>("Product with id " + id + " not found", HttpStatus.NOT_FOUND);
+    public ResponseEntity<ProductResponseDTO> getProductById(Long id) {
+        if (productRepository.existsById(id)) {
+            System.out.println("пизда всё пустое");
+            // todo throw custom exception
+            // return new ResponseEntity<>("Product with id " + id + " not found", HttpStatus.NOT_FOUND);
         }
 
-        return new ResponseEntity<>(productMapper.toResponseDTO(productRepository.findById(id).get()), HttpStatus.OK);
+        Product product = productRepository.findById(id).get();
+        ProductResponseDTO productResponseDTO = new ProductResponseDTO(
+                product.getId(),
+                product.getName(),
+                product.getQuantity(),
+                product.getPrice(),
+                product.getDiscountPercent()
+        );
+
+        return new ResponseEntity<>(productResponseDTO, HttpStatus.OK);
     }
 
 
     @Override
-    public ResponseEntity<?> createNewProduct(ProductRequestDTO productRequestDTO) {
-        Product product = productMapper.toEntityFromRequestDTO(productRequestDTO);
+    public ResponseEntity<ProductResponseDTO> createNewProduct(ProductRequestDTO productRequestDTO) {
+        Product product = new Product(
+                productRequestDTO.getName(),
+                productRequestDTO.getQuantity(),
+                productRequestDTO.getPrice(),
+                productRequestDTO.getDiscountPercent()
+        );
+
         productRepository.save(product);
-        return new ResponseEntity<>(productMapper.toResponseDTO(product), HttpStatus.CREATED);
+
+        ProductResponseDTO productResponseDTO = new ProductResponseDTO(
+                product.getId(),
+                product.getName(),
+                product.getQuantity(),
+                product.getPrice(),
+                product.getDiscountPercent()
+        );
+
+        return new ResponseEntity<>(productResponseDTO, HttpStatus.CREATED);
     }
 
-
     @Override
-    public ResponseEntity<?> deleteProductById(Integer id) {
+    public ResponseEntity<ProductResponseDTO> deleteProductById(Long id) {
         if (!productRepository.existsById(id)) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            // todo throw custom exception
+            System.out.println("Пизда: ничего не найдено");
         }
 
+        Product product = productRepository.findById(id).get();
         productRepository.deleteById(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+
+        ProductResponseDTO productResponseDTO = new ProductResponseDTO(
+                product.getId(),
+                product.getName(),
+                product.getQuantity(),
+                product.getPrice(),
+                product.getDiscountPercent()
+        );
+
+        return new ResponseEntity<>(productResponseDTO, HttpStatus.OK);
     }
 }

@@ -7,11 +7,11 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 public interface ProductService {
-    ResponseEntity<?> getAllProducts();
+    ResponseEntity<List<ProductResponseDTO>> getAllProducts();
 
-    ResponseEntity<?> getProductById(Integer id);
+    ResponseEntity<ProductResponseDTO> getProductById(Long id);
 
-    ResponseEntity<?> createNewProduct(ProductRequestDTO productRequestDTO);
+    ResponseEntity<ProductResponseDTO> createNewProduct(ProductRequestDTO productRequestDTO);
 
-    ResponseEntity<?> deleteProductById(Integer id);
+    ResponseEntity<ProductResponseDTO> deleteProductById(Long id);
 }

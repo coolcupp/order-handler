@@ -4,19 +4,29 @@ import java.math.BigDecimal;
 import java.util.Objects;
 
 public class ProductResponseDTO {
+    private Long id;
     private String name;
     private Integer quantity;
     private BigDecimal price;
     private BigDecimal discountPercent;
 
-    public ProductResponseDTO(String name, Integer quantity, BigDecimal price, BigDecimal discountPercent) {
+    public ProductResponseDTO() {
+    }
+
+    public ProductResponseDTO(Long id, String name, Integer quantity, BigDecimal price, BigDecimal discountPercent) {
+        this.id = id;
         this.name = name;
         this.quantity = quantity;
         this.price = price;
         this.discountPercent = discountPercent;
     }
 
-    public ProductResponseDTO() {
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -56,18 +66,19 @@ public class ProductResponseDTO {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ProductResponseDTO that = (ProductResponseDTO) o;
-        return Objects.equals(name, that.name) && Objects.equals(quantity, that.quantity) && Objects.equals(price, that.price) && Objects.equals(discountPercent, that.discountPercent);
+        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(quantity, that.quantity) && Objects.equals(price, that.price) && Objects.equals(discountPercent, that.discountPercent);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, quantity, price, discountPercent);
+        return Objects.hash(id, name, quantity, price, discountPercent);
     }
 
     @Override
     public String toString() {
         return "ProductResponseDTO{" +
-                "name='" + name + '\'' +
+                "id=" + id +
+                ", name='" + name + '\'' +
                 ", quantity=" + quantity +
                 ", price=" + price +
                 ", discountPercent=" + discountPercent +
