@@ -1,5 +1,7 @@
 package com.coolcupp.notification_service.service;
 
+import com.coolcupp.common_lib.event.KafkaCreateOrderEvent;
+import com.coolcupp.common_lib.event.KafkaCreateOrderEventItem;
 import com.coolcupp.notification_service.dto.OrderItemResponseDTO;
 import com.coolcupp.notification_service.dto.OrderResponseDTO;
 import com.coolcupp.notification_service.model.Order;
@@ -11,7 +13,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -58,7 +62,7 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
-    public ResponseEntity<List<OrderItemResponseDTO>> getOrderItemsByOrderId(Long orderId) {
+    public ResponseEntity<List<OrderItemResponseDTO>> getOrderItemsByOrderId(UUID orderId) {
         List<OrderItem> orderItems = orderItemRepository.findByOrderId(orderId);
 
         if (orderItems.isEmpty()) {
@@ -105,5 +109,42 @@ public class OrderServiceImpl implements OrderService {
                 .toList();
 
         return new ResponseEntity<>(orderItemResponseDTOList, HttpStatus.OK);
+    }
+
+    @Override
+    public String createNewOrder(KafkaCreateOrderEvent kafkaCreateOrderEvent) {
+        // PARSING EVENT
+        UUID orderId = kafkaCreateOrderEvent.getOrderId();
+        Long userId = kafkaCreateOrderEvent.getUserId();
+        List<KafkaCreateOrderEventItem> kafkaCreateOrderEventItems = kafkaCreateOrderEvent.getEventItemList();
+
+        // CALCULATING TOTAL ORDER PRICE
+        BigDecimal totalOrderPrice = kafkaCreateOrderEventItems.stream()
+                .map(KafkaCreateOrderEventItem::getTotalItemPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        // creating and saving order to db
+        Order order = new Order(
+                orderId,
+                userId,
+                totalOrderPrice
+        );
+        orderRepository.save(order);
+        // todo LOGGING ORDER SAVED TO DB
+
+        List<OrderItem> orderItems = kafkaCreateOrderEventItems.stream()
+                .map(kafkaCreateOrderEventItem -> new OrderItem(
+                        order,
+                        kafkaCreateOrderEventItem.getProductId(),
+                        kafkaCreateOrderEventItem.getQuantityToOrder(),
+                        kafkaCreateOrderEventItem.getPrice(),
+                        kafkaCreateOrderEventItem.getDiscountPercent(),
+                        kafkaCreateOrderEventItem.getTotalItemPrice()
+                ))
+                .toList();
+        orderItemRepository.saveAll(orderItems);
+        // todo LOGGING ORDER ITEMS SAVED TO DB
+
+        return "Order with id: " + orderId.toString() + " saved successfully";
     }
 }

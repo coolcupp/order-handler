@@ -18,11 +18,11 @@ public class OrderCreatedEventHandler {
 
     @KafkaHandler
     public void handle(KafkaCreateOrderEvent kafkaCreateOrderEvent) {
+        // todo LOGGING KAFKA ACCEPT MESSAGE
         System.out.println("==========ACCEPTED FROM KAFKA================");
         System.out.println(kafkaCreateOrderEvent);
-        // todo SAVE ORDER TO DB
 
-
+        orderService.createNewOrder(kafkaCreateOrderEvent);
     }
 
 }

@@ -3,10 +3,11 @@ package com.coolcupp.notification_service.dto;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 public class OrderResponseDTO {
 
-    private Long orderId;
+    private UUID orderId;
     private Long userId;
     private BigDecimal totalPrice;
     private List<OrderItemResponseDTO> orderItems;
@@ -14,18 +15,18 @@ public class OrderResponseDTO {
     public OrderResponseDTO() {
     }
 
-    public OrderResponseDTO(Long orderId, Long userId, BigDecimal totalPrice, List<OrderItemResponseDTO> orderItems) {
+    public OrderResponseDTO(UUID orderId, Long userId, BigDecimal totalPrice, List<OrderItemResponseDTO> orderItems) {
         this.orderId = orderId;
         this.userId = userId;
         this.totalPrice = totalPrice;
         this.orderItems = orderItems;
     }
 
-    public Long getOrderId() {
+    public UUID getOrderId() {
         return orderId;
     }
 
-    public void setOrderId(Long orderId) {
+    public void setOrderId(UUID orderId) {
         this.orderId = orderId;
     }
 

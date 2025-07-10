@@ -37,7 +37,7 @@ public class OrderItem {
     public OrderItem() {
     }
 
-    public OrderItem(Long id, Order order, Long productId, Integer quantity, BigDecimal price,
+    public OrderItem(Order order, Long productId, Integer quantity, BigDecimal price,
                      BigDecimal discountPercent, BigDecimal totalItemPrice) {
         this.id = id;
         this.order = order;

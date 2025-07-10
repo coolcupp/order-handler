@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.UUID;
 
 
 @RestController
@@ -28,7 +29,7 @@ public class OrderController {
     }
 
     @GetMapping("orders/{orderId}")
-    public ResponseEntity<List<OrderItemResponseDTO>> getOrderItemsByOrderId(@PathVariable("orderId") Long orderId) {
+    public ResponseEntity<List<OrderItemResponseDTO>> getOrderItemsByOrderId(@PathVariable("orderId") UUID orderId) {
         return orderService.getOrderItemsByOrderId(orderId);
     }
 

@@ -6,14 +6,14 @@ import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 @Entity
 @Table(name = "orders")
 public class Order {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Long id;
+    private UUID id;
 
     @Column(name = "user_id")
     private Long userId;
@@ -28,18 +28,18 @@ public class Order {
     public Order() {
     }
 
-    public Order(Long id, Long userId, BigDecimal totalPrice, List<OrderItem> orderItems) {
+    public Order(UUID id, Long userId, BigDecimal totalPrice) {
         this.id = id;
         this.userId = userId;
         this.totalPrice = totalPrice;
         this.orderItems = orderItems;
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
