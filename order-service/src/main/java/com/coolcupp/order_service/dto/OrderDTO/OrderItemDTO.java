@@ -4,22 +4,22 @@ import java.util.Objects;
 
 public class OrderItemDTO {
 
-    private Integer productId;
+    private Long productId;
     private Integer quantityToOrder;
 
     public OrderItemDTO() {
     }
 
-    public OrderItemDTO(Integer productId, Integer quantityToOrder) {
+    public OrderItemDTO(Long productId, Integer quantityToOrder) {
         this.productId = productId;
         this.quantityToOrder = quantityToOrder;
     }
 
-    public Integer getProductId() {
+    public Long getProductId() {
         return productId;
     }
 
-    public void setProductId(Integer productId) {
+    public void setProductId(Long productId) {
         this.productId = productId;
     }
 

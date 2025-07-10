@@ -23,6 +23,7 @@ public class OrderController {
 
         // GETIING AND GENERATE ORDER ID AND USER ID
         // todo getting userId and set to createOrderDTO from serurity
+        createOrderDTO.setUserId(123123L);
         createOrderDTO.setOrderId(UUID.randomUUID()); // generic random order UUID
 
         return orderService.createNewOrder(createOrderDTO);

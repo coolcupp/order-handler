@@ -7,7 +7,7 @@ import java.util.UUID;
 public class CreateOrderDTO {
 
     private UUID orderId;
-    private Long userId = 123L; // todo getting from security
+    private Long userId; // todo getting from security
     private List<OrderItemDTO> orderItems;
 
     public CreateOrderDTO() {

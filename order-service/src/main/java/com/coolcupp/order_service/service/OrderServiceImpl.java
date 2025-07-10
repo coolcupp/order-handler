@@ -2,10 +2,13 @@ package com.coolcupp.order_service.service;
 
 import com.coolcupp.common_lib.event.CreateOrderEvent;
 
+import com.coolcupp.inventoryService.grpc.ProductTotalResponse;
 import com.coolcupp.order_service.dto.OrderDTO.OrderItemDTO;
 import com.coolcupp.order_service.dto.OrderDTO.CreateOrderDTO;
 
 //import com.coolcupp.order_service.service.grpc.InventoryServiceGRPCClient;
+import com.coolcupp.order_service.service.grpc.InventoryServiceGRPCClient;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -17,57 +20,37 @@ import java.util.UUID;
 public class OrderServiceImpl implements OrderService {
 
     private final KafkaTemplate<String, CreateOrderEvent> kafkaTemplate;
-//    private final InventoryServiceGRPCClient inventoryServiceGrpcClient;
+    private final InventoryServiceGRPCClient inventoryServiceGRPCClient;
 
 
-    public OrderServiceImpl(KafkaTemplate<String, CreateOrderEvent> kafkaTemplate) {
+    public OrderServiceImpl(KafkaTemplate<String, CreateOrderEvent> kafkaTemplate,
+                            InventoryServiceGRPCClient inventoryServiceGRPCClient) {
         this.kafkaTemplate = kafkaTemplate;
-        // to grpc check availability
+        this.inventoryServiceGRPCClient = inventoryServiceGRPCClient;
     }
 
 
     public ResponseEntity<?> createNewOrder(CreateOrderDTO createOrderDTO) {
-        // parsing orderItemDto -> items, orderID, userID
+        // PARSING CreateOrderDTO
         List<OrderItemDTO> orderItems = createOrderDTO.getOrderItems();
         UUID orderId = createOrderDTO.getOrderId();
         Long userId = createOrderDTO.getUserId();
-
         // todo logging request accepted
 
-        // todo grpc check availability
+        // GRPC CHECK AVAILABILITY -> 2 lists: availability, unavailability
+        ProductTotalResponse productTotalResponse = inventoryServiceGRPCClient.CheckAvailability(orderItems);
+        // todo logging availability is checked
 
+        // if items in storage not enough
+        if (!productTotalResponse.getUnavailabilityItemsList().isEmpty()) {
+            System.out.println("NOT READY TO CREATING ORDER: NOT ENOUGH ITEMS");
+            // todo throw custom exception -> not enough items in storage
+        }
 
-
-//        for (OrderItemDTO orderItem : orderItems) {
-//
-//            // get info about product from grpc
-//            ProductAvailabilityResponseDTO productResponseGrpcDTO =
-//                    inventoryServiceGrpcClient.checkAvailability(orderItem.getProductId());
-//
-//            // check availability of product
-//            if (orderItem.getQuantityToOrder() > productResponseGrpcDTO.getQuantity()) {
-//                return new ResponseEntity<>("bad quantity of product: " + productResponseGrpcDTO.getName(),
-//                        HttpStatus.NOT_ACCEPTABLE);
-//            }
-//
-//            // creating a kafka message item and add in list
-//            BigDecimal orderItemEventPrice = new BigDecimal(productResponseGrpcDTO.getPrice());
-//            BigDecimal orderItemEventDiscountPercent = new BigDecimal(productResponseGrpcDTO.getDiscountPercent());
-//            Integer quantityToOrder = orderItem.getQuantityToOrder();
-//
-//            BigDecimal discount = orderItemEventPrice
-//                    .multiply(orderItemEventDiscountPercent)
-//                    .divide(BigDecimal.valueOf(100));
-//            BigDecimal finalItemPrice = orderItemEventPrice.subtract(discount);
-//            BigDecimal totalPrice = finalItemPrice.multiply(BigDecimal.valueOf(quantityToOrder));
-//
-//            OrderItemEvent orderItemEvent = new OrderItemEvent(
-//                    orderItem.getProductId(),
-//                    quantityToOrder,
-//                    orderItemEventPrice,
-//                    orderItemEventDiscountPercent,
-//                    totalPrice
-//            );
+        if (productTotalResponse.getUnavailabilityItemsList().isEmpty()) {
+            // todo sent to kafka
+            // todo logging sent to kafka
+        }
 
         return null;
     }
