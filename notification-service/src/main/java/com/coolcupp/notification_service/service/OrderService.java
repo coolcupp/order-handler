@@ -1,6 +1,5 @@
 package com.coolcupp.notification_service.service;
 
-import com.coolcupp.common_lib.event.CreateOrderEvent;
 import com.coolcupp.notification_service.dto.OrderItemResponseDTO;
 import com.coolcupp.notification_service.dto.OrderResponseDTO;
 import org.springframework.http.ResponseEntity;

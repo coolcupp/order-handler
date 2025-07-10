@@ -106,24 +106,4 @@ public class OrderServiceImpl implements OrderService {
 
         return new ResponseEntity<>(orderItemResponseDTOList, HttpStatus.OK);
     }
-
-//    @Override
-//    public String createNewOrder(CreateOrderEvent createOrderEvent) {
-//        List<OrderItemEvent> orderItems = createOrderEvent.getOrderItems();
-//        Integer orderId = createOrderEvent.getOrderId();
-//        Integer userId = createOrderEvent.getUserId();
-//
-//        for (OrderItemEvent orderItem : orderItems) {
-//            Order order = new Order();
-//            order.setOrderId(orderId);
-//            order.setProductId(orderItem.getProductId());
-//            order.setUserId(userId);
-//            order.setQuantity(orderItem.getQuantityToOrder());
-//            order.setPrice(orderItem.getProductPrice());
-//            order.setDiscountPercent(orderItem.getDiscountPercent());
-//            order.setTotalPrice(orderItem.getTotalPrice());
-//            orderRepository.save(order);
-//        }
-//        return "SAVED SUCCESSFULLY";
-//    }
 }

@@ -1,6 +1,6 @@
 package com.coolcupp.notification_service.handler;
 
-import com.coolcupp.common_lib.event.CreateOrderEvent;
+import com.coolcupp.common_lib.event.KafkaCreateOrderEvent;
 import com.coolcupp.notification_service.service.OrderService;
 import org.springframework.kafka.annotation.KafkaHandler;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -17,9 +17,12 @@ public class OrderCreatedEventHandler {
     }
 
     @KafkaHandler
-    public void handle(CreateOrderEvent createOrderEvent) {
-        System.out.println(createOrderEvent);
-//        orderService.createNewOrder(createOrderEvent);
+    public void handle(KafkaCreateOrderEvent kafkaCreateOrderEvent) {
+        System.out.println("==========ACCEPTED FROM KAFKA================");
+        System.out.println(kafkaCreateOrderEvent);
+        // todo SAVE ORDER TO DB
+
+
     }
 
 }
