@@ -5,6 +5,7 @@ import com.coolcupp.common_lib.event.CreateOrderEvent;
 import com.coolcupp.order_service.dto.OrderDTO.OrderItemDTO;
 import com.coolcupp.order_service.dto.OrderDTO.CreateOrderDTO;
 
+//import com.coolcupp.order_service.service.grpc.InventoryServiceGRPCClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -16,10 +17,12 @@ import java.util.UUID;
 public class OrderServiceImpl implements OrderService {
 
     private final KafkaTemplate<String, CreateOrderEvent> kafkaTemplate;
+//    private final InventoryServiceGRPCClient inventoryServiceGrpcClient;
 
 
     public OrderServiceImpl(KafkaTemplate<String, CreateOrderEvent> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
+        // to grpc check availability
     }
 
 
@@ -30,6 +33,8 @@ public class OrderServiceImpl implements OrderService {
         Long userId = createOrderDTO.getUserId();
 
         // todo logging request accepted
+
+        // todo grpc check availability
 
 
 

@@ -4,17 +4,17 @@ package com.coolcupp.inventoryService.grpc;
 option java_multiple_files = true;
 
 message ProductResponseItem {
-  int32 id = 1;
+  int64 id = 1;
   string name = 2;
-  int32 quantity = 3;
+  int32 requestedQuantity = 3;
   string price = 4;
   string discountPercent = 5;
-  int32 requestedQuantity = 6;
+  int32 quantityInStorage = 6;
   bool isAvailability = 7;
 }
 
 message ProductRequestItem {
-  int32 id = 1;
+  int64 id = 1;
   int32 requestedQuantity = 2;
 }
 
