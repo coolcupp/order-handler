@@ -9,6 +9,8 @@ import com.coolcupp.order_service.dto.OrderDTO.OrderItemDTO;
 import com.coolcupp.order_service.dto.OrderDTO.CreateOrderDTO;
 
 import com.coolcupp.order_service.service.grpc.InventoryServiceGRPCClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -25,6 +27,7 @@ public class OrderServiceImpl implements OrderService {
 
     private final KafkaTemplate<String, KafkaCreateOrderEvent> kafkaTemplate;
     private final InventoryServiceGRPCClient inventoryServiceGRPCClient;
+    private static final Logger LOGGER = LoggerFactory.getLogger(OrderServiceImpl.class);
 
 
     public OrderServiceImpl(KafkaTemplate<String, KafkaCreateOrderEvent> kafkaTemplate,
@@ -39,23 +42,24 @@ public class OrderServiceImpl implements OrderService {
         List<OrderItemDTO> orderItems = createOrderDTO.getOrderItems();
         UUID orderId = createOrderDTO.getOrderId();
         Long userId = createOrderDTO.getUserId();
-        // todo LOGGING request accepted
+        LOGGER.info("Order ID: {} || Parsing createOrderDTO...", orderId);
 
         // GRPC CHECK AVAILABILITY -> 2 lists: availability, unavailability
+        LOGGER.info("Order ID: {} || checking availability items...", orderId);
         ProductTotalResponse productTotalResponse = inventoryServiceGRPCClient.CheckAvailability(orderItems);
-        // todo LOGGING availability is checked
+
 
         // if items in storage not enough (unavail. list is not empty)
         if (!productTotalResponse.getUnavailabilityItemsList().isEmpty()) {
-            System.out.println("NOT READY TO CREATING ORDER: NOT ENOUGH ITEMS");
-            // todo LOGGING ERROR
+            LOGGER.error("Order ID: {} || not ready to creating order: not enough items in storage", orderId);
             // todo THROW CUSTOM EXCEPTION -> not enough items in storage
             return new ResponseEntity<>("not enough items", HttpStatus.NOT_ACCEPTABLE);
         }
 
         // CREATING KAFKA EVENT
         if (productTotalResponse.getUnavailabilityItemsList().isEmpty()) {
-
+            LOGGER.info("Order ID: {} || ready to creting order: enough items in storage", orderId);
+            LOGGER.info("Order ID: {} || Start creating kafka message...", orderId);
             KafkaCreateOrderEvent kafkaCreateOrderEvent = new KafkaCreateOrderEvent();
             kafkaCreateOrderEvent.setOrderId(orderId);
             kafkaCreateOrderEvent.setUserId(userId);
@@ -85,14 +89,13 @@ public class OrderServiceImpl implements OrderService {
                 ));
             }
             kafkaCreateOrderEvent.setEventItemList(kafkaCreateOrderEventItems);
+            LOGGER.info("Order ID: {} || Kafka message created.", orderId);
+
 
             // SENT TO KAFKA (BY PRODUCER)
+            LOGGER.info("Order ID: {} || Sending order message to kafka...", orderId);
             kafkaTemplate.send("ordersTopic", orderId.toString(), kafkaCreateOrderEvent);
-            // todo logging sent to kafka
 
-            System.out.println(kafkaCreateOrderEvent.getUserId());
-            System.out.println(kafkaCreateOrderEvent.getOrderId());
-            System.out.println(kafkaCreateOrderEvent.getEventItemList());
             return new ResponseEntity<>("order created", HttpStatus.CREATED);
         }
 

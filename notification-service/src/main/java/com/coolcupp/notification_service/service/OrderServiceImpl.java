@@ -9,6 +9,8 @@ import com.coolcupp.notification_service.model.OrderItem;
 import com.coolcupp.notification_service.repository.OrderItemRepository;
 import com.coolcupp.notification_service.repository.OrderRepository;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,7 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
+    private static final Logger LOGGER = LoggerFactory.getLogger(OrderServiceImpl.class);
 
     public OrderServiceImpl(OrderRepository orderRepository, OrderItemRepository orderItemRepository) {
         this.orderRepository = orderRepository;
