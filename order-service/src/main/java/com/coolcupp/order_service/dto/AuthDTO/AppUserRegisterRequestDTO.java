@@ -1,24 +1,22 @@
-package com.coolcupp.order_service.dto.AppUserDTO;
-
-import com.coolcupp.order_service.model.Role;
+package com.coolcupp.order_service.dto.AuthDTO;
 
 import java.util.Objects;
 
-public class AppUserRequestDTO {
+public class AppUserRegisterRequestDTO {
 
     private String username;
-    private String password;
-    private String email;
-    private Role role;
 
-    public AppUserRequestDTO() {
+    private String password;
+
+    private String email;
+
+    public AppUserRegisterRequestDTO() {
     }
 
-    public AppUserRequestDTO(String username, String password, String email, Role role) {
+    public AppUserRegisterRequestDTO(String username, String password, String email) {
         this.username = username;
         this.password = password;
         this.email = email;
-        this.role = role;
     }
 
     public String getUsername() {
@@ -45,34 +43,25 @@ public class AppUserRequestDTO {
         this.email = email;
     }
 
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        AppUserRequestDTO that = (AppUserRequestDTO) o;
-        return Objects.equals(username, that.username) && Objects.equals(password, that.password) && Objects.equals(email, that.email) && role == that.role;
+        AppUserRegisterRequestDTO that = (AppUserRegisterRequestDTO) o;
+        return Objects.equals(username, that.username) && Objects.equals(password, that.password) && Objects.equals(email, that.email);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(username, password, email, role);
+        return Objects.hash(username, password, email);
     }
 
     @Override
     public String toString() {
-        return "AppUserRequestDTO{" +
+        return "AppUserRegisterRequestDTO{" +
                 "username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 ", email='" + email + '\'' +
-                ", role=" + role +
                 '}';
     }
 }

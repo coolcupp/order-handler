@@ -2,10 +2,14 @@ package com.coolcupp.order_service.service;
 
 import com.coolcupp.order_service.dto.AppUserDTO.AppUserRequestDTO;
 import com.coolcupp.order_service.dto.AppUserDTO.AppUserResponseDTO;
+import com.coolcupp.order_service.dto.AuthDTO.AppUserRegisterRequestDTO;
+import com.coolcupp.order_service.dto.AuthDTO.AppUserRegisterResponseDTO;
 import com.coolcupp.order_service.model.AppUser;
+import com.coolcupp.order_service.model.Role;
 import com.coolcupp.order_service.repository.AppUserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,9 +18,11 @@ import java.util.List;
 public class AppUserServiceImpl implements AppUserService {
 
     private final AppUserRepository appUserRepository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public AppUserServiceImpl(AppUserRepository appUserRepository) {
+    public AppUserServiceImpl(AppUserRepository appUserRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.appUserRepository = appUserRepository;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
 
@@ -64,7 +70,7 @@ public class AppUserServiceImpl implements AppUserService {
     public ResponseEntity<AppUserResponseDTO> createAppUser(AppUserRequestDTO appUserRequestDTO) {
         AppUser appUser = new AppUser(
                 appUserRequestDTO.getUsername(),
-                appUserRequestDTO.getPassword(),
+                bCryptPasswordEncoder.encode(appUserRequestDTO.getPassword()), // encode password
                 appUserRequestDTO.getEmail(),
                 appUserRequestDTO.getRole()
         );
@@ -117,6 +123,24 @@ public class AppUserServiceImpl implements AppUserService {
                 appUserFromDb.getUsername(),
                 appUserFromDb.getEmail(),
                 appUserFromDb.getRole()
+        );
+        return new ResponseEntity<>(appUserResponseDTO, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<AppUserRegisterResponseDTO> registerNewUser(AppUserRegisterRequestDTO
+                                                                                  appUserRegisterRequestDTO) {
+        AppUser appUser = new AppUser(
+                appUserRegisterRequestDTO.getUsername(),
+                bCryptPasswordEncoder.encode(appUserRegisterRequestDTO.getPassword()), // encode password
+                appUserRegisterRequestDTO.getEmail(),
+                Role.USER
+        );
+        appUserRepository.save(appUser);
+        AppUserRegisterResponseDTO appUserResponseDTO = new AppUserRegisterResponseDTO(
+                appUser.getId(),
+                appUser.getUsername(),
+                appUser.getEmail()
         );
         return new ResponseEntity<>(appUserResponseDTO, HttpStatus.OK);
     }

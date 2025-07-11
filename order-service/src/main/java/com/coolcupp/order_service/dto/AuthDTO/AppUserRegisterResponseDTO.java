@@ -1,24 +1,22 @@
-package com.coolcupp.order_service.dto.AppUserDTO;
-
-import com.coolcupp.order_service.model.Role;
+package com.coolcupp.order_service.dto.AuthDTO;
 
 import java.util.Objects;
 
-public class AppUserResponseDTO {
+public class AppUserRegisterResponseDTO {
 
     private Long userId;
-    private String username;
-    private String email;
-    private Role role;
 
-    public AppUserResponseDTO() {
+    private String username;
+
+    private String email;
+
+    public AppUserRegisterResponseDTO() {
     }
 
-    public AppUserResponseDTO(Long userId, String username, String email, Role role) {
+    public AppUserRegisterResponseDTO(Long userId, String username, String email) {
         this.userId = userId;
         this.username = username;
         this.email = email;
-        this.role = role;
     }
 
     public Long getUserId() {
@@ -45,34 +43,25 @@ public class AppUserResponseDTO {
         this.email = email;
     }
 
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        AppUserResponseDTO that = (AppUserResponseDTO) o;
-        return Objects.equals(userId, that.userId) && Objects.equals(username, that.username) && Objects.equals(email, that.email) && role == that.role;
+        AppUserRegisterResponseDTO that = (AppUserRegisterResponseDTO) o;
+        return Objects.equals(userId, that.userId) && Objects.equals(username, that.username) && Objects.equals(email, that.email);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(userId, username, email, role);
+        return Objects.hash(userId, username, email);
     }
 
     @Override
     public String toString() {
-        return "AppUserResponseDTO{" +
+        return "AppUserRegisterResponseDTO{" +
                 "userId=" + userId +
                 ", username='" + username + '\'' +
                 ", email='" + email + '\'' +
-                ", role=" + role +
                 '}';
     }
 }
