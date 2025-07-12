@@ -1,4 +1,4 @@
-package com.coolcupp.order_service.dto.AuthDTO;
+package com.coolcupp.order_service.security.authDTO;
 
 import java.util.Objects;
 

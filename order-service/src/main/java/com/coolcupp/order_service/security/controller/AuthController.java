@@ -1,7 +1,8 @@
-package com.coolcupp.order_service.controller.security;
+package com.coolcupp.order_service.security.controller;
 
-import com.coolcupp.order_service.dto.AuthDTO.AppUserRegisterRequestDTO;
-import com.coolcupp.order_service.dto.AuthDTO.AppUserRegisterResponseDTO;
+import com.coolcupp.order_service.security.authDTO.AppUserLoginRequestDTO;
+import com.coolcupp.order_service.security.authDTO.AppUserRegisterRequestDTO;
+import com.coolcupp.order_service.security.authDTO.AppUserRegisterResponseDTO;
 import com.coolcupp.order_service.service.AppUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +27,12 @@ public class AuthController {
     public ResponseEntity<AppUserRegisterResponseDTO> register(@RequestBody AppUserRegisterRequestDTO appUserRegisterDTO) {
         LOGGER.info("REGISTER USER: {} || request accepted", appUserRegisterDTO.getUsername());
         return appUserService.registerNewUser(appUserRegisterDTO);
+    }
+
+    @PostMapping("login")
+    public ResponseEntity<?> login(@RequestBody AppUserLoginRequestDTO appUserLoginRequestDTO) {
+        LOGGER.info("LOGIN USER: {} || request accepted", appUserLoginRequestDTO.getUsername());
+        return appUserService.verify(appUserLoginRequestDTO);
     }
 
     // todo login controllerl

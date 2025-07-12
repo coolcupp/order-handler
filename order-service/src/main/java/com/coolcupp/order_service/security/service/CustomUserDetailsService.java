@@ -1,4 +1,4 @@
-package com.coolcupp.order_service.service.security;
+package com.coolcupp.order_service.security.service;
 
 import com.coolcupp.order_service.repository.AppUserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
