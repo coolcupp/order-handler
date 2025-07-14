@@ -1,8 +1,6 @@
 package com.coolcupp.order_service.security.controller;
 
-import com.coolcupp.order_service.security.securityDTO.AppUserLoginRequestDTO;
-import com.coolcupp.order_service.security.securityDTO.AppUserRegisterRequestDTO;
-import com.coolcupp.order_service.security.securityDTO.AppUserRegisterResponseDTO;
+import com.coolcupp.order_service.security.securityDTO.*;
 import com.coolcupp.order_service.security.service.RefreshTokenService;
 import com.coolcupp.order_service.service.AppUserService;
 import org.slf4j.Logger;
@@ -37,7 +35,11 @@ public class AuthController {
         LOGGER.info("LOGIN USER: {} || request accepted", appUserLoginRequestDTO.getUsername());
         return appUserService.verify(appUserLoginRequestDTO);
     }
-    // todo refresh controller
+
+    @PostMapping("refresh")
+    public ResponseEntity<RefreshTokenResponseDTO> refreshToken(@RequestBody RefreshTokenRequestDTO refreshTokenRequestDTO) {
+        return refreshTokenService.refreshToken(refreshTokenRequestDTO);
+    }
 
 
 

@@ -37,7 +37,7 @@ public class SecurityConfig {
 //                .httpBasic(Customizer.withDefaults()) // basic http authentication
                 .authorizeHttpRequests(
                         request -> request
-                                .requestMatchers("/auth/register", "/auth/login").permitAll()
+                                .requestMatchers("/auth/register", "/auth/login", "/auth/refresh").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
