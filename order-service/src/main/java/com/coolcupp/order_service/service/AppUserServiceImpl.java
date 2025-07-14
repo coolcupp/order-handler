@@ -2,13 +2,16 @@ package com.coolcupp.order_service.service;
 
 import com.coolcupp.order_service.dto.AppUserDTO.AppUserRequestDTO;
 import com.coolcupp.order_service.dto.AppUserDTO.AppUserResponseDTO;
-import com.coolcupp.order_service.security.authDTO.AppUserLoginRequestDTO;
-import com.coolcupp.order_service.security.authDTO.AppUserRegisterRequestDTO;
-import com.coolcupp.order_service.security.authDTO.AppUserRegisterResponseDTO;
+import com.coolcupp.order_service.security.securityDTO.AppUserLoginRequestDTO;
+import com.coolcupp.order_service.security.securityDTO.AppUserRegisterRequestDTO;
+import com.coolcupp.order_service.security.securityDTO.AppUserRegisterResponseDTO;
 import com.coolcupp.order_service.model.AppUser;
 import com.coolcupp.order_service.model.Role;
 import com.coolcupp.order_service.repository.AppUserRepository;
+import com.coolcupp.order_service.security.model.RefreshToken;
+import com.coolcupp.order_service.security.securityDTO.JwtResponseDTO;
 import com.coolcupp.order_service.security.service.JwtService;
+import com.coolcupp.order_service.security.service.RefreshTokenService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,13 +30,16 @@ public class AppUserServiceImpl implements AppUserService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
+    private final RefreshTokenService refreshTokenService;
 
     public AppUserServiceImpl(AppUserRepository appUserRepository, BCryptPasswordEncoder bCryptPasswordEncoder,
-                              AuthenticationManager authenticationManager, JwtService jwtService) {
+                              AuthenticationManager authenticationManager, JwtService jwtService,
+                              RefreshTokenService refreshTokenService) {
         this.appUserRepository = appUserRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
+        this.refreshTokenService = refreshTokenService;
     }
 
 
@@ -158,7 +164,7 @@ public class AppUserServiceImpl implements AppUserService {
 
 
     @Override
-    public ResponseEntity<?> verify(AppUserLoginRequestDTO appUserLoginRequestDTO) {
+    public ResponseEntity<JwtResponseDTO> verify(AppUserLoginRequestDTO appUserLoginRequestDTO) {
         // say spring: "it's my log and password"
         // load user from bd
         Authentication authentication = authenticationManager.authenticate(
@@ -172,11 +178,18 @@ public class AppUserServiceImpl implements AppUserService {
 
             // generating jwt token
             String jwtToken = jwtService.generateToken(userDetails);
+            // generating refresh token
+            RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getUsername());
 
-            return new ResponseEntity<>(jwtToken, HttpStatus.OK);
+            JwtResponseDTO jwtResponseDTO = new JwtResponseDTO(
+                    jwtToken,
+                    refreshToken.getToken()
+            );
+
+            return new ResponseEntity<>(jwtResponseDTO, HttpStatus.OK);
         }
 
         // todo throw custom exception
-        return new ResponseEntity<>("LOGIN FAILED", HttpStatus.UNAUTHORIZED);
+        return null;
     }
 }

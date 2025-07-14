@@ -34,7 +34,7 @@ public class SecurityConfig {
         return http
                 .csrf(AbstractHttpConfigurer::disable) // disable csrf protection
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .httpBasic(Customizer.withDefaults()) // basic http authentication
+//                .httpBasic(Customizer.withDefaults()) // basic http authentication
                 .authorizeHttpRequests(
                         request -> request
                                 .requestMatchers("/auth/register", "/auth/login").permitAll()

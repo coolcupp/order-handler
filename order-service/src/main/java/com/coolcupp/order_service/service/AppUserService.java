@@ -2,9 +2,10 @@ package com.coolcupp.order_service.service;
 
 import com.coolcupp.order_service.dto.AppUserDTO.AppUserRequestDTO;
 import com.coolcupp.order_service.dto.AppUserDTO.AppUserResponseDTO;
-import com.coolcupp.order_service.security.authDTO.AppUserLoginRequestDTO;
-import com.coolcupp.order_service.security.authDTO.AppUserRegisterRequestDTO;
-import com.coolcupp.order_service.security.authDTO.AppUserRegisterResponseDTO;
+import com.coolcupp.order_service.security.securityDTO.AppUserLoginRequestDTO;
+import com.coolcupp.order_service.security.securityDTO.AppUserRegisterRequestDTO;
+import com.coolcupp.order_service.security.securityDTO.AppUserRegisterResponseDTO;
+import com.coolcupp.order_service.security.securityDTO.JwtResponseDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +23,8 @@ public interface AppUserService {
 
     ResponseEntity<AppUserResponseDTO> updateAppUserById(Long id, AppUserRequestDTO appUserRequestDTO);
 
-    ResponseEntity<AppUserRegisterResponseDTO> registerNewUser(AppUserRegisterRequestDTO appUserRegisterRequestDTO);
+    ResponseEntity<AppUserRegisterResponseDTO> registerNewUser(
+            AppUserRegisterRequestDTO appUserRegisterRequestDTO);
 
-    ResponseEntity<?> verify(AppUserLoginRequestDTO appUserLoginRequestDTO);
+    ResponseEntity<JwtResponseDTO> verify(AppUserLoginRequestDTO appUserLoginRequestDTO);
 }

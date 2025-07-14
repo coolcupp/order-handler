@@ -1,8 +1,9 @@
 package com.coolcupp.order_service.security.controller;
 
-import com.coolcupp.order_service.security.authDTO.AppUserLoginRequestDTO;
-import com.coolcupp.order_service.security.authDTO.AppUserRegisterRequestDTO;
-import com.coolcupp.order_service.security.authDTO.AppUserRegisterResponseDTO;
+import com.coolcupp.order_service.security.securityDTO.AppUserLoginRequestDTO;
+import com.coolcupp.order_service.security.securityDTO.AppUserRegisterRequestDTO;
+import com.coolcupp.order_service.security.securityDTO.AppUserRegisterResponseDTO;
+import com.coolcupp.order_service.security.service.RefreshTokenService;
 import com.coolcupp.order_service.service.AppUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,10 +18,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final AppUserService appUserService;
+    private final RefreshTokenService refreshTokenService;
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthController.class);
 
-    public AuthController(AppUserService appUserService) {
+    public AuthController(AppUserService appUserService, RefreshTokenService refreshTokenService) {
         this.appUserService = appUserService;
+        this.refreshTokenService = refreshTokenService;
     }
 
     @PostMapping("register")
@@ -34,9 +37,9 @@ public class AuthController {
         LOGGER.info("LOGIN USER: {} || request accepted", appUserLoginRequestDTO.getUsername());
         return appUserService.verify(appUserLoginRequestDTO);
     }
-
-    // todo login controllerl
-
     // todo refresh controller
+
+
+
 
 }
