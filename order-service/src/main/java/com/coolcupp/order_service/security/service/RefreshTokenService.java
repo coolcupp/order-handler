@@ -51,7 +51,7 @@ public class RefreshTokenService {
         LOGGER.info("GENERATING TOKEN for user: {}", userId);
         RefreshToken refreshToken = new RefreshToken(
                 UUID.randomUUID().toString(),
-                Instant.now().plusMillis(600000), // 10 min
+                Instant.now().plusMillis(3600000), // 10 min
                 appUser
         );
         LOGGER.info("TOKEN: {}", refreshToken.getToken());

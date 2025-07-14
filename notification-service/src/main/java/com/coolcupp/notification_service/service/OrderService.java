@@ -18,5 +18,5 @@ public interface OrderService {
 
     ResponseEntity<List<OrderItemResponseDTO>> getOrderItemsByUserId(Long userId);
 
-    String createNewOrder(KafkaCreateOrderEvent kafkaCreateOrderEvent);
+    void createNewOrder(KafkaCreateOrderEvent kafkaCreateOrderEvent);
 }

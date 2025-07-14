@@ -114,8 +114,10 @@ public class OrderServiceImpl implements OrderService {
         return new ResponseEntity<>(orderItemResponseDTOList, HttpStatus.OK);
     }
 
+
     @Override
-    public String createNewOrder(KafkaCreateOrderEvent kafkaCreateOrderEvent) {
+    public void createNewOrder(KafkaCreateOrderEvent kafkaCreateOrderEvent) {
+        LOGGER.info("Kafka message received for orderID: {}", kafkaCreateOrderEvent.getOrderId());
         // PARSING EVENT
         UUID orderId = kafkaCreateOrderEvent.getOrderId();
         Long userId = kafkaCreateOrderEvent.getUserId();
@@ -126,6 +128,7 @@ public class OrderServiceImpl implements OrderService {
                 .map(KafkaCreateOrderEventItem::getTotalItemPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
+        LOGGER.info("Start creating and saving order to DB... ORDER ID: {}", kafkaCreateOrderEvent.getOrderId());
         // creating and saving order to db
         Order order = new Order(
                 orderId,
@@ -133,7 +136,7 @@ public class OrderServiceImpl implements OrderService {
                 totalOrderPrice
         );
         orderRepository.save(order);
-        // todo LOGGING ORDER SAVED TO DB
+        LOGGER.info("Order with ID: {} CREATED AND SAVED SUCCESSFULLY", orderId);
 
         List<OrderItem> orderItems = kafkaCreateOrderEventItems.stream()
                 .map(kafkaCreateOrderEventItem -> new OrderItem(
@@ -146,8 +149,6 @@ public class OrderServiceImpl implements OrderService {
                 ))
                 .toList();
         orderItemRepository.saveAll(orderItems);
-        // todo LOGGING ORDER ITEMS SAVED TO DB
-
-        return "Order with id: " + orderId.toString() + " saved successfully";
+        LOGGER.info("ORDER ID: {} || order items saved successfully", orderId);
     }
 }

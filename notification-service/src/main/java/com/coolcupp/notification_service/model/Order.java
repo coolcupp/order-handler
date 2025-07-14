@@ -32,7 +32,6 @@ public class Order {
         this.id = id;
         this.userId = userId;
         this.totalPrice = totalPrice;
-        this.orderItems = orderItems;
     }
 
     public UUID getId() {
