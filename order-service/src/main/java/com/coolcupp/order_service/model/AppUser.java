@@ -41,6 +41,7 @@ public class AppUser implements UserDetails {
         this.role = role;
     }
 
+
     // user details methods
     @Override
     public boolean isAccountNonExpired() {
@@ -55,6 +56,10 @@ public class AppUser implements UserDetails {
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
+    }
+
+    public String getPassword() {
+        return password;
     }
 
     @Override
@@ -72,6 +77,7 @@ public class AppUser implements UserDetails {
         return username;
     }
 
+
     // getters and setters
     public Long getId() {
         return id;
@@ -85,9 +91,6 @@ public class AppUser implements UserDetails {
         this.username = username;
     }
 
-    public String getPassword() {
-        return password;
-    }
 
     public void setPassword(String password) {
         this.password = password;

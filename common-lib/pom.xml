@@ -81,5 +81,6 @@
 				</executions>
 			</plugin>
 		</plugins>
+		<finalName>common-lib</finalName>
 	</build>
 </project>

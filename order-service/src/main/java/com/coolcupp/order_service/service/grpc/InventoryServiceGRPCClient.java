@@ -14,7 +14,7 @@ import java.util.List;
 @Service
 public class InventoryServiceGRPCClient {
 
-    @GrpcClient("InventoryServiceGRPCClient")
+    @GrpcClient("inventorygrpcclient")
     private InventoryServiceGrpc.InventoryServiceBlockingStub blockingStub;
 
     public ProductTotalResponse CheckAvailability(List<OrderItemDTO> orderItemDTOList) {

@@ -1,0 +1,118 @@
+version: '3.9'
+
+volumes:
+  order-handler-postgresDB-data:
+
+networks:
+  backend:
+    driver: bridge
+
+services:
+#kafka
+  kafka:
+    image: confluentinc/cp-kafka:7.4.0
+    container_name: kafka
+    restart: always
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker, controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LOG_DIRS: /tmp/kraft-combined-logs
+      CLUSTER_ID: MTEwMQ==
+    networks:
+      - backend
+
+
+#database with tables
+  order-handler-postgresDB:
+    image: postgres:16
+    container_name: order-handler-postgresDB
+    restart: always
+    environment:
+      POSTGRES_DB: order_handler_postgresDB
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345678
+    ports:
+      - "5432:5432"
+    volumes:
+      - order-handler-postgresDB-data:/var/lib/postgresql/data
+      - ./init/init-db:/docker-entrypoint-initdb.d:ro
+    networks:
+      - backend
+
+
+#microservices
+
+  order-service:
+    build:
+      context: ./order-service
+      dockerfile: Dockerfile
+    container_name: order-service
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SPRING_KAFKA_PRODUCER_KEY_SERIALIZER: org.apache.kafka.common.serialization.StringSerializer
+      SPRING_KAFKA_PRODUCER_VALUE_SERIALIZER: org.springframework.kafka.support.serializer.JsonSerializer
+      GRPC_CLIENT_INVENTORYGRPCCLIENT_ADDRESS: inventory-service:9090
+      GRPC_CLIENT_INVENTORYGRPCCLIENT_NEGOTIATION_TYPE: plaintext
+      SPRING_DATASOURCE_URL: jdbc:postgresql://order-handler-postgresDB:5432/order_handler_postgresDB
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 12345678
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      - kafka
+      - order-handler-postgresDB
+      - inventory-service
+    networks:
+      - backend
+
+
+  notification-service:
+    build:
+      context: ./notification-service
+      dockerfile: Dockerfile
+    container_name: notification-service
+    ports:
+      - "8083:8083"
+    environment:
+      SPRING_KAFKA_CONSUMER_BOOTSTRAP_SERVERS: kafka:9092
+      SPRING_KAFKA_CONSUMER_KEY_DESERIALIZER: org.apache.kafka.common.serialization.StringDeserializer
+      SPRING_KAFKA_CONSUMER_VALUE_DESERIALIZER: org.springframework.kafka.support.serializer.JsonDeserializer
+      SPRING_KAFKA_CONSUMER_GROUP_ID: order-created-event
+      SPRING_KAFKA_CONSUMER_PROPERTIES_SPRING_JSON_TRUSTED_PACKAGES: "*"
+      SPRING_DATASOURCE_URL: jdbc:postgresql://order-handler-postgresDB:5432/order_handler_postgresDB
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 12345678
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      - kafka
+      - order-handler-postgresDB
+    networks:
+      - backend
+
+
+  inventory-service:
+    build:
+      context: ./inventory-service
+      dockerfile: Dockerfile
+    container_name: inventory-service
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://order-handler-postgresDB:5432/order_handler_postgresDB
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 12345678
+      GRPC_SERVER_PORT: 9090
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      - order-handler-postgresDB
+    networks:
+      - backend
