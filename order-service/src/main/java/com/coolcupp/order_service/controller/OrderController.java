@@ -3,6 +3,7 @@ package com.coolcupp.order_service.controller;
 import com.coolcupp.order_service.dto.OrderDTO.CreateOrderDTO;
 import com.coolcupp.order_service.service.OrderServiceImpl;
 
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
