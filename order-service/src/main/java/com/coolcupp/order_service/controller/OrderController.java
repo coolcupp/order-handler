@@ -25,7 +25,7 @@ public class OrderController {
     public ResponseEntity<?> createNewOrder(@RequestBody CreateOrderDTO createOrderDTO) {
         // GETIING AND GENERATE ORDER ID AND USER ID
         // todo getting userId and set to createOrderDTO from serurity
-        createOrderDTO.setUserId(123123L);
+        createOrderDTO.setUserId(1L);
         createOrderDTO.setOrderId(UUID.randomUUID()); // generic random order UUID
 
         LOGGER.info("Order ID: {} || Accepted request to create an order", createOrderDTO.getOrderId());
