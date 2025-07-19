@@ -3,7 +3,7 @@ package com.coolcupp.inventory_service;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {"com.coolcupp.inventory_service", "com.coolcupp.common_lib"})
 public class InventoryServiceApplication {
 
 	public static void main(String[] args) {

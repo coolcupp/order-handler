@@ -2,6 +2,7 @@ package com.coolcupp.notification_service.service;
 
 import com.coolcupp.common_lib.event.KafkaCreateOrderEvent;
 import com.coolcupp.common_lib.event.KafkaCreateOrderEventItem;
+import com.coolcupp.common_lib.exception_handling.exception.NotFoundException;
 import com.coolcupp.notification_service.dto.OrderItemResponseDTO;
 import com.coolcupp.notification_service.dto.OrderResponseDTO;
 import com.coolcupp.notification_service.model.Order;
@@ -9,6 +10,7 @@ import com.coolcupp.notification_service.model.OrderItem;
 import com.coolcupp.notification_service.repository.OrderItemRepository;
 import com.coolcupp.notification_service.repository.OrderRepository;
 
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -20,11 +22,11 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@Slf4j
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
-    private static final Logger LOGGER = LoggerFactory.getLogger(OrderServiceImpl.class);
 
     public OrderServiceImpl(OrderRepository orderRepository, OrderItemRepository orderItemRepository) {
         this.orderRepository = orderRepository;
@@ -38,9 +40,8 @@ public class OrderServiceImpl implements OrderService {
 
         // if not found orders
         if (orders.isEmpty()) {
-            // todo custom exception
-            // return new ResponseEntity<>("Orders not found", HttpStatus.NOT_FOUND);
-            System.out.println("Пиздец всё пустое");
+            log.error("No orders found");
+            throw new NotFoundException("No orders found");
         }
 
         // order -> order response dto todo mapstruct
@@ -69,12 +70,12 @@ public class OrderServiceImpl implements OrderService {
         List<OrderItem> orderItems = orderItemRepository.findByOrderId(orderId);
 
         if (orderItems.isEmpty()) {
-            // todo throw custom exception
-            // return new ResponseEntity<>("Order items not found", HttpStatus.NOT_FOUND);
-            System.out.println("пиздец всё пустое");
+            log.error("No order items found for order with ID: {}", orderId);
+            throw new NotFoundException("No order items found for order with ID: " + orderId);
         }
 
         // order item list -> order item response dto list
+        // todo mapper
         List<OrderItemResponseDTO> orderItemResponseDTOList = orderItems.stream()
                 .map(orderItem -> new OrderItemResponseDTO(
                         orderItem.getProductId(),
@@ -117,7 +118,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public void createNewOrder(KafkaCreateOrderEvent kafkaCreateOrderEvent) {
-        LOGGER.info("Kafka message received for orderID: {}", kafkaCreateOrderEvent.getOrderId());
+        log.info("Kafka message received for order with ID: {}", kafkaCreateOrderEvent.getOrderId());
         // PARSING EVENT
         UUID orderId = kafkaCreateOrderEvent.getOrderId();
         Long userId = kafkaCreateOrderEvent.getUserId();
@@ -128,7 +129,7 @@ public class OrderServiceImpl implements OrderService {
                 .map(KafkaCreateOrderEventItem::getTotalItemPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        LOGGER.info("Start creating and saving order to DB... ORDER ID: {}", kafkaCreateOrderEvent.getOrderId());
+        log.info("Start creating and saving order to DB... ORDER ID: {}", kafkaCreateOrderEvent.getOrderId());
         // creating and saving order to db
         Order order = new Order(
                 orderId,
@@ -136,7 +137,7 @@ public class OrderServiceImpl implements OrderService {
                 totalOrderPrice
         );
         orderRepository.save(order);
-        LOGGER.info("Order with ID: {} CREATED AND SAVED SUCCESSFULLY", orderId);
+        log.info("Order with ID: {} CREATED AND SAVED SUCCESSFULLY", orderId);
 
         List<OrderItem> orderItems = kafkaCreateOrderEventItems.stream()
                 .map(kafkaCreateOrderEventItem -> new OrderItem(
@@ -149,6 +150,6 @@ public class OrderServiceImpl implements OrderService {
                 ))
                 .toList();
         orderItemRepository.saveAll(orderItems);
-        LOGGER.info("ORDER ID: {} || order items saved successfully", orderId);
+        log.info("ORDER ID: {} || order items saved successfully", orderId);
     }
 }

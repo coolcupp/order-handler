@@ -1,17 +1,19 @@
 package com.coolcupp.inventory_service.service;
 
+import com.coolcupp.common_lib.exception_handling.exception.NotFoundException;
 import com.coolcupp.inventory_service.dto.ProductRequestDTO;
 import com.coolcupp.inventory_service.dto.ProductResponseDTO;
 import com.coolcupp.inventory_service.model.Product;
 import com.coolcupp.inventory_service.repository.ProductRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
@@ -26,9 +28,8 @@ public class ProductServiceImpl implements ProductService {
         List<Product> products = productRepository.findAll();
 
         if (products.isEmpty()) {
-            System.out.println("пизда всё пустое");
-            // todo throw custom exception
-            // return new ResponseEntity<>("Products not found", HttpStatus.NO_CONTENT);
+            log.error("No products found");
+            throw new NotFoundException("No products found");
         }
 
         // list of products -> list of product dto
@@ -48,9 +49,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ResponseEntity<ProductResponseDTO> getProductById(Long id) {
-        if (productRepository.existsById(id)) {
-            System.out.println("пизда всё пустое");
-            // todo throw custom exception
+        if (!productRepository.existsById(id)) {
+            log.info("Product not found with id: {}", id);
+            throw new NotFoundException("Product not found with id: " + id);
             // return new ResponseEntity<>("Product with id " + id + " not found", HttpStatus.NOT_FOUND);
         }
 
@@ -69,6 +70,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ResponseEntity<ProductResponseDTO> createNewProduct(ProductRequestDTO productRequestDTO) {
+        log.info("Creating new product with name: {}", productRequestDTO.getName());
         Product product = new Product(
                 productRequestDTO.getName(),
                 productRequestDTO.getQuantity(),
@@ -86,14 +88,16 @@ public class ProductServiceImpl implements ProductService {
                 product.getDiscountPercent()
         );
 
+        log.info("Product created: {}", productResponseDTO.getName());
         return new ResponseEntity<>(productResponseDTO, HttpStatus.CREATED);
     }
 
     @Override
     public ResponseEntity<ProductResponseDTO> deleteProductById(Long id) {
+        log.info("Deleting product with id: {} ...", id);
         if (!productRepository.existsById(id)) {
-            // todo throw custom exception
-            System.out.println("Пизда: ничего не найдено");
+            log.error("Product not found with id: {}", id);
+            throw new NotFoundException("Product not found with id: " + id);
         }
 
         Product product = productRepository.findById(id).get();
@@ -107,6 +111,7 @@ public class ProductServiceImpl implements ProductService {
                 product.getDiscountPercent()
         );
 
+        log.info("Product deleted: {} !", productResponseDTO.getName());
         return new ResponseEntity<>(productResponseDTO, HttpStatus.OK);
     }
 }

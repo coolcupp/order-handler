@@ -4,7 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import org.hibernate.annotations.DialectOverride;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -17,11 +17,13 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Service
+@Slf4j
 public class JwtService {
 
     private String secretKey = null;
 
     public String generateToken(UserDetails userDetails) {
+        log.info("Start generating JWT Token for user: {}", userDetails.getUsername());
         Map<String, Object> claims = new HashMap<>();
 
         List<String> roles = userDetails.getAuthorities().stream()

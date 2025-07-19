@@ -1,5 +1,6 @@
 package com.coolcupp.order_service.service;
 
+import com.coolcupp.common_lib.exception_handling.exception.NotFoundException;
 import com.coolcupp.order_service.dto.AppUserDTO.AppUserRequestDTO;
 import com.coolcupp.order_service.dto.AppUserDTO.AppUserResponseDTO;
 import com.coolcupp.order_service.security.securityDTO.AppUserLoginRequestDTO;
@@ -12,6 +13,7 @@ import com.coolcupp.order_service.security.model.RefreshToken;
 import com.coolcupp.order_service.security.securityDTO.JwtResponseDTO;
 import com.coolcupp.order_service.security.service.JwtService;
 import com.coolcupp.order_service.security.service.RefreshTokenService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,6 +26,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+@Slf4j
 public class AppUserServiceImpl implements AppUserService {
 
     private final AppUserRepository appUserRepository;
@@ -47,9 +50,9 @@ public class AppUserServiceImpl implements AppUserService {
     public ResponseEntity<List<AppUserResponseDTO>> getAllAppUsers() {
         List<AppUser> appUsers = appUserRepository.findAll();
         if (appUsers.isEmpty()) {
-            System.out.println("Пизда, ничего нету");
+            log.info("No app users found in DB");
             // todo throw custom exception
-            // return new ResponseEntity<>("Users not found", HttpStatus.NO_CONTENT);
+//             return new ResponseEntity<>("Users not found", HttpStatus.NO_CONTENT);
         }
         // list of app users -> list of app user dto's
         List<AppUserResponseDTO> appUserResponseDTOList = appUsers.stream()
@@ -60,6 +63,7 @@ public class AppUserServiceImpl implements AppUserService {
                         appUser.getRole()
                 ))
                 .toList();
+        log.info("Some users found in DB");
         return new ResponseEntity<>(appUserResponseDTOList, HttpStatus.OK);
     }
 
@@ -67,7 +71,7 @@ public class AppUserServiceImpl implements AppUserService {
     @Override
     public ResponseEntity<AppUserResponseDTO> getAppUserById(Long id) {
         if (!appUserRepository.existsById(id)) {
-            System.out.println("Пизда, ничего нету.");
+            log.info("No app user found with id {}", id);
             // todo throw custom exception
             // return new ResponseEntity<>("User with id " + id + " not found", HttpStatus.NOT_FOUND);
         }
@@ -79,12 +83,14 @@ public class AppUserServiceImpl implements AppUserService {
                 appUser.getEmail(),
                 appUser.getRole()
         );
+        log.info("User found with id {}", id);
         return new ResponseEntity<>(appUserResponseDTO, HttpStatus.OK);
     }
 
 
     @Override
     public ResponseEntity<AppUserResponseDTO> createAppUser(AppUserRequestDTO appUserRequestDTO) {
+        log.info("Start creating app user with username: {} ...", appUserRequestDTO.getUsername());
         AppUser appUser = new AppUser(
                 appUserRequestDTO.getUsername(),
                 bCryptPasswordEncoder.encode(appUserRequestDTO.getPassword()), // encode password
@@ -98,6 +104,7 @@ public class AppUserServiceImpl implements AppUserService {
                 appUser.getEmail(),
                 appUser.getRole()
         );
+        log.info("App user created with id {}", appUser.getId());
         return new ResponseEntity<>(appUserResponseDTO, HttpStatus.OK);
     }
 
@@ -105,7 +112,7 @@ public class AppUserServiceImpl implements AppUserService {
     @Override
     public ResponseEntity<AppUserResponseDTO> deleteAppUserById(Long id) {
         if (!appUserRepository.existsById(id)) {
-            System.out.println("Пизда, ничего нету");
+            log.info("User with id:{} not found", id);
             // todo throw custom exception
             // return new ResponseEntity<>("User with id " + id + " not found", HttpStatus.NOT_FOUND);
         }
@@ -117,6 +124,7 @@ public class AppUserServiceImpl implements AppUserService {
                 appUser.getEmail(),
                 appUser.getRole()
         );
+        log.info("User with id:{} deleted", id);
         return new ResponseEntity<>(appUserResponseDTO, HttpStatus.OK);
     }
 
@@ -124,8 +132,8 @@ public class AppUserServiceImpl implements AppUserService {
     @Override
     public ResponseEntity<AppUserResponseDTO> updateAppUserById(Long id, AppUserRequestDTO appUserRequestDTO) {
         if (!appUserRepository.existsById(id)) {
-            System.out.println("Пиздец, не найдено");
-            // todo throw custom exception
+            log.info("User with id:{} doesn't exists", id);
+            throw new NotFoundException("User with ID: " + id + " doesn't exists");
             // return new ResponseEntity<>("User with id " + id + " not found", HttpStatus.NOT_FOUND);
         }
         AppUser appUserFromDb = appUserRepository.findById(id).get();
@@ -141,12 +149,14 @@ public class AppUserServiceImpl implements AppUserService {
                 appUserFromDb.getEmail(),
                 appUserFromDb.getRole()
         );
+        log.info("User with id: {} updated", id);
         return new ResponseEntity<>(appUserResponseDTO, HttpStatus.OK);
     }
 
     @Override
     public ResponseEntity<AppUserRegisterResponseDTO> registerNewUser(AppUserRegisterRequestDTO
                                                                                   appUserRegisterRequestDTO) {
+        log.info("Start registration new user with username: {} ...", appUserRegisterRequestDTO.getUsername());
         AppUser appUser = new AppUser(
                 appUserRegisterRequestDTO.getUsername(),
                 bCryptPasswordEncoder.encode(appUserRegisterRequestDTO.getPassword()), // encode password
@@ -159,13 +169,14 @@ public class AppUserServiceImpl implements AppUserService {
                 appUser.getUsername(),
                 appUser.getEmail()
         );
+        log.info("User registered with id {}", appUser.getId());
         return new ResponseEntity<>(appUserResponseDTO, HttpStatus.OK);
     }
 
 
     @Override
     public ResponseEntity<JwtResponseDTO> verify(AppUserLoginRequestDTO appUserLoginRequestDTO) {
-        // say spring: "it's my log and password"
+        log.info("Start verifying user with username: {}", appUserLoginRequestDTO.getUsername());
         // load user from bd
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -173,6 +184,7 @@ public class AppUserServiceImpl implements AppUserService {
         );
 
         if (authentication.isAuthenticated()) {
+            log.info("User authenticated! Start generating token...");
             // getting user details from authenticate object
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
@@ -186,10 +198,11 @@ public class AppUserServiceImpl implements AppUserService {
                     refreshToken.getToken()
             );
 
+            log.info("User with username: {} verifying completed", appUserLoginRequestDTO.getUsername());
             return new ResponseEntity<>(jwtResponseDTO, HttpStatus.OK);
         }
 
-        // todo throw custom exception
+        log.error("User with username: {} not authenticated!", appUserLoginRequestDTO.getUsername());
         return null;
     }
 }

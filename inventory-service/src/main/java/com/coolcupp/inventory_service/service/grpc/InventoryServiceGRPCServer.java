@@ -1,9 +1,11 @@
 package com.coolcupp.inventory_service.service.grpc;
 
+import com.coolcupp.common_lib.exception_handling.exception.NotFoundException;
 import com.coolcupp.inventoryService.grpc.*;
 import com.coolcupp.inventory_service.model.Product;
 import com.coolcupp.inventory_service.repository.ProductRepository;
 import io.grpc.stub.StreamObserver;
+import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.server.service.GrpcService;
 
 import java.util.ArrayList;
@@ -11,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @GrpcService
+@Slf4j
 public class InventoryServiceGRPCServer extends InventoryServiceGrpc.InventoryServiceImplBase {
 
     private final ProductRepository productRepository;
@@ -22,6 +25,7 @@ public class InventoryServiceGRPCServer extends InventoryServiceGrpc.InventorySe
     @Override
     public void checkAvailability(ProductTotalRequest request,
                                   StreamObserver<ProductTotalResponse> responseObserver) {
+        log.info("GRPC SERVER: start checking availability");
         // parsing request
         List<ProductRequestItem> requestItems = request.getItemsList();
 
@@ -33,8 +37,8 @@ public class InventoryServiceGRPCServer extends InventoryServiceGrpc.InventorySe
 
             Optional<Product> productOptional = productRepository.findById(requestItem.getId());
             if (productOptional.isEmpty()) {
-                System.out.println("Пиздец, пусто");
-                // todo throw custom exception
+                log.error("GRPC SERVER: product with id {} not found", requestItem.getId());
+                throw new NotFoundException("product with id " + requestItem.getId() + " not found");
             }
             Product product = productOptional.get();
 
@@ -78,5 +82,6 @@ public class InventoryServiceGRPCServer extends InventoryServiceGrpc.InventorySe
 
         responseObserver.onNext(response);
         responseObserver.onCompleted();
+        log.info("GRPC SERVER: availability check completed");
     }
 }
