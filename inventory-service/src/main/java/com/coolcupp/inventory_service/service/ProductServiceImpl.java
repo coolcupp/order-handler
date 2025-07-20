@@ -50,7 +50,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ResponseEntity<ProductResponseDTO> getProductById(Long id) {
         if (!productRepository.existsById(id)) {
-            log.info("Product not found with id: {}", id);
+            log.warn("Product not found with id: {}", id);
             throw new NotFoundException("Product not found with id: " + id);
             // return new ResponseEntity<>("Product with id " + id + " not found", HttpStatus.NOT_FOUND);
         }

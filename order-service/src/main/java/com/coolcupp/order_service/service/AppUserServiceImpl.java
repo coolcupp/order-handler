@@ -3,6 +3,7 @@ package com.coolcupp.order_service.service;
 import com.coolcupp.common_lib.exception_handling.exception.NotFoundException;
 import com.coolcupp.order_service.dto.AppUserDTO.AppUserRequestDTO;
 import com.coolcupp.order_service.dto.AppUserDTO.AppUserResponseDTO;
+import com.coolcupp.order_service.mapper.AppUserMapper;
 import com.coolcupp.order_service.security.securityDTO.AppUserLoginRequestDTO;
 import com.coolcupp.order_service.security.securityDTO.AppUserRegisterRequestDTO;
 import com.coolcupp.order_service.security.securityDTO.AppUserRegisterResponseDTO;
@@ -34,15 +35,17 @@ public class AppUserServiceImpl implements AppUserService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
+    private final AppUserMapper appUserMapper;
 
     public AppUserServiceImpl(AppUserRepository appUserRepository, BCryptPasswordEncoder bCryptPasswordEncoder,
                               AuthenticationManager authenticationManager, JwtService jwtService,
-                              RefreshTokenService refreshTokenService) {
+                              RefreshTokenService refreshTokenService, AppUserMapper appUserMapper) {
         this.appUserRepository = appUserRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
         this.refreshTokenService = refreshTokenService;
+        this.appUserMapper = appUserMapper;
     }
 
 
@@ -51,18 +54,22 @@ public class AppUserServiceImpl implements AppUserService {
         List<AppUser> appUsers = appUserRepository.findAll();
         if (appUsers.isEmpty()) {
             log.info("No app users found in DB");
-            // todo throw custom exception
-//             return new ResponseEntity<>("Users not found", HttpStatus.NO_CONTENT);
+            throw new NotFoundException("No app users found in DB");
         }
         // list of app users -> list of app user dto's
-        List<AppUserResponseDTO> appUserResponseDTOList = appUsers.stream()
-                .map(appUser -> new AppUserResponseDTO(
-                        appUser.getId(),
-                        appUser.getUsername(),
-                        appUser.getEmail(),
-                        appUser.getRole()
-                ))
-                .toList();
+        // todo List<appUser> -> List<appUserResponseDTO>
+//        List<AppUserResponseDTO> appUserResponseDTOList = appUsers.stream()
+//                .map(appUser -> new AppUserResponseDTO(
+//                        appUser.getId(),
+//                        appUser.getUsername(),
+//                        appUser.getEmail(),
+//                        appUser.getRole()
+//                ))
+//                .toList();
+
+        List<AppUserResponseDTO> appUserResponseDTOList =
+                appUserMapper.toAppUserResponseDTOListFromAppUserList(appUsers);
+
         log.info("Some users found in DB");
         return new ResponseEntity<>(appUserResponseDTOList, HttpStatus.OK);
     }
@@ -72,17 +79,11 @@ public class AppUserServiceImpl implements AppUserService {
     public ResponseEntity<AppUserResponseDTO> getAppUserById(Long id) {
         if (!appUserRepository.existsById(id)) {
             log.info("No app user found with id {}", id);
-            // todo throw custom exception
-            // return new ResponseEntity<>("User with id " + id + " not found", HttpStatus.NOT_FOUND);
+            throw new NotFoundException("No app user found with id: " + id);
         }
         // app user -> appUserDTO
         AppUser appUser = appUserRepository.findById(id).get();
-        AppUserResponseDTO appUserResponseDTO = new AppUserResponseDTO(
-                appUser.getId(),
-                appUser.getUsername(),
-                appUser.getEmail(),
-                appUser.getRole()
-        );
+        AppUserResponseDTO appUserResponseDTO = appUserMapper.toAppUserResponseDTOFromAppUser(appUser);
         log.info("User found with id {}", id);
         return new ResponseEntity<>(appUserResponseDTO, HttpStatus.OK);
     }
@@ -91,19 +92,14 @@ public class AppUserServiceImpl implements AppUserService {
     @Override
     public ResponseEntity<AppUserResponseDTO> createAppUser(AppUserRequestDTO appUserRequestDTO) {
         log.info("Start creating app user with username: {} ...", appUserRequestDTO.getUsername());
-        AppUser appUser = new AppUser(
-                appUserRequestDTO.getUsername(),
-                bCryptPasswordEncoder.encode(appUserRequestDTO.getPassword()), // encode password
-                appUserRequestDTO.getEmail(),
-                appUserRequestDTO.getRole()
-        );
+
+        // appUserRequestDTO -> appUser
+        AppUser appUser = appUserMapper.toAppUserFromRequestDTO(appUserRequestDTO);
+        // saving user to DB
         appUserRepository.save(appUser);
-        AppUserResponseDTO appUserResponseDTO = new AppUserResponseDTO(
-                appUser.getId(),
-                appUser.getUsername(),
-                appUser.getEmail(),
-                appUser.getRole()
-        );
+        // AppUser -> appUserResponseDTO
+        AppUserResponseDTO appUserResponseDTO = appUserMapper.toAppUserResponseDTOFromAppUser(appUser);
+
         log.info("App user created with id {}", appUser.getId());
         return new ResponseEntity<>(appUserResponseDTO, HttpStatus.OK);
     }
@@ -113,17 +109,15 @@ public class AppUserServiceImpl implements AppUserService {
     public ResponseEntity<AppUserResponseDTO> deleteAppUserById(Long id) {
         if (!appUserRepository.existsById(id)) {
             log.info("User with id:{} not found", id);
-            // todo throw custom exception
-            // return new ResponseEntity<>("User with id " + id + " not found", HttpStatus.NOT_FOUND);
+            throw new NotFoundException("User with id: " + id);
         }
         AppUser appUser = appUserRepository.findById(id).get();
+
         appUserRepository.deleteById(id);
-        AppUserResponseDTO appUserResponseDTO = new AppUserResponseDTO(
-                appUser.getId(),
-                appUser.getUsername(),
-                appUser.getEmail(),
-                appUser.getRole()
-        );
+
+        // appUser -> appUserResponseDTO
+        AppUserResponseDTO appUserResponseDTO = appUserMapper.toAppUserResponseDTOFromAppUser(appUser);
+
         log.info("User with id:{} deleted", id);
         return new ResponseEntity<>(appUserResponseDTO, HttpStatus.OK);
     }
@@ -134,21 +128,18 @@ public class AppUserServiceImpl implements AppUserService {
         if (!appUserRepository.existsById(id)) {
             log.info("User with id:{} doesn't exists", id);
             throw new NotFoundException("User with ID: " + id + " doesn't exists");
-            // return new ResponseEntity<>("User with id " + id + " not found", HttpStatus.NOT_FOUND);
         }
         AppUser appUserFromDb = appUserRepository.findById(id).get();
-        appUserFromDb.setUsername(appUserRequestDTO.getUsername());
-        appUserFromDb.setPassword(appUserRequestDTO.getPassword());
-        appUserFromDb.setEmail(appUserRequestDTO.getEmail());
-        appUserFromDb.setRole(appUserRequestDTO.getRole());
 
+        // appUserRequestDTO -> appUser
+        appUserFromDb = appUserMapper.toAppUserFromRequestDTO(appUserRequestDTO);
+
+        // saving updated user to DB
         appUserRepository.save(appUserFromDb);
-        AppUserResponseDTO appUserResponseDTO = new AppUserResponseDTO(
-                appUserFromDb.getId(),
-                appUserFromDb.getUsername(),
-                appUserFromDb.getEmail(),
-                appUserFromDb.getRole()
-        );
+
+        // appUser -> appUserResponseDTO
+        AppUserResponseDTO appUserResponseDTO = appUserMapper.toAppUserResponseDTOFromAppUser(appUserFromDb);
+
         log.info("User with id: {} updated", id);
         return new ResponseEntity<>(appUserResponseDTO, HttpStatus.OK);
     }
@@ -157,20 +148,27 @@ public class AppUserServiceImpl implements AppUserService {
     public ResponseEntity<AppUserRegisterResponseDTO> registerNewUser(AppUserRegisterRequestDTO
                                                                                   appUserRegisterRequestDTO) {
         log.info("Start registration new user with username: {} ...", appUserRegisterRequestDTO.getUsername());
-        AppUser appUser = new AppUser(
-                appUserRegisterRequestDTO.getUsername(),
-                bCryptPasswordEncoder.encode(appUserRegisterRequestDTO.getPassword()), // encode password
-                appUserRegisterRequestDTO.getEmail(),
-                Role.USER
-        );
+//        AppUser appUser = new AppUser(
+//                appUserRegisterRequestDTO.getUsername(),
+//                bCryptPasswordEncoder.encode(appUserRegisterRequestDTO.getPassword()), // encode password
+//                appUserRegisterRequestDTO.getEmail(),
+//                Role.USER
+//        );
+        AppUser appUser = appUserMapper.toAppUserFromRegisterRequestDTO(appUserRegisterRequestDTO);
+
+        // saving user to DB
         appUserRepository.save(appUser);
-        AppUserRegisterResponseDTO appUserResponseDTO = new AppUserRegisterResponseDTO(
-                appUser.getId(),
-                appUser.getUsername(),
-                appUser.getEmail()
-        );
+        // todo appUser -> appUserRegisterResponseDTO
+//        AppUserRegisterResponseDTO appUserResponseDTO = new AppUserRegisterResponseDTO(
+//                appUser.getId(),
+//                appUser.getUsername(),
+//                appUser.getEmail()
+//        );
+        AppUserRegisterResponseDTO appUserRegisterResponseDTO =
+                appUserMapper.toAppUserRegisterResponseDTOFromAppUser(appUser);
+
         log.info("User registered with id {}", appUser.getId());
-        return new ResponseEntity<>(appUserResponseDTO, HttpStatus.OK);
+        return new ResponseEntity<>(appUserRegisterResponseDTO, HttpStatus.OK);
     }
 
 

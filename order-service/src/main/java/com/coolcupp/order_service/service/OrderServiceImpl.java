@@ -37,7 +37,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
 
-    public ResponseEntity<?> createNewOrder(CreateOrderDTO createOrderDTO) {
+    public ResponseEntity<UUID> createNewOrder(CreateOrderDTO createOrderDTO) {
         // PARSING CreateOrderDTO
         List<OrderItemDTO> orderItems = createOrderDTO.getOrderItems();
         UUID orderId = createOrderDTO.getOrderId();
@@ -90,7 +90,7 @@ public class OrderServiceImpl implements OrderService {
             log.info("Order ID: {} || Sending order message to kafka...", orderId);
             kafkaTemplate.send("ordersTopic", orderId.toString(), kafkaCreateOrderEvent);
 
-            return new ResponseEntity<>(HttpStatus.OK);
+            return new ResponseEntity<>(orderId ,HttpStatus.OK);
         } else {
             log.error("Order ID: {} || not ready to creating order: not enough items in storage", orderId);
             throw new NotEnoughItemsInStorageException(
