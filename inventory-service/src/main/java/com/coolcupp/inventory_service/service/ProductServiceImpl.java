@@ -3,6 +3,7 @@ package com.coolcupp.inventory_service.service;
 import com.coolcupp.common_lib.exception_handling.exception.NotFoundException;
 import com.coolcupp.inventory_service.dto.ProductRequestDTO;
 import com.coolcupp.inventory_service.dto.ProductResponseDTO;
+import com.coolcupp.inventory_service.mapper.ProductMapper;
 import com.coolcupp.inventory_service.model.Product;
 import com.coolcupp.inventory_service.repository.ProductRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -17,9 +18,11 @@ import java.util.List;
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
+    private final ProductMapper productMapper;
 
-    public ProductServiceImpl(ProductRepository productRepository) {
+    public ProductServiceImpl(ProductRepository productRepository, ProductMapper productMapper) {
         this.productRepository = productRepository;
+        this.productMapper = productMapper;
     }
 
 
@@ -33,15 +36,18 @@ public class ProductServiceImpl implements ProductService {
         }
 
         // list of products -> list of product dto
-        List<ProductResponseDTO> productResponseDTOList = products.stream()
-                .map(product -> new ProductResponseDTO(
-                        product.getId(),
-                        product.getName(),
-                        product.getQuantity(),
-                        product.getPrice(),
-                        product.getDiscountPercent()
-                ))
-                .toList();
+        // todo mapper
+//        List<ProductResponseDTO> productResponseDTOList = products.stream()
+//                .map(product -> new ProductResponseDTO(
+//                        product.getId(),
+//                        product.getName(),
+//                        product.getQuantity(),
+//                        product.getPrice(),
+//                        product.getDiscountPercent()
+//                ))
+//                .toList();
+        List<ProductResponseDTO> productResponseDTOList =
+                productMapper.toProductResponseDTOListFromProductList(products);
 
         return new ResponseEntity<>(productResponseDTOList, HttpStatus.OK);
     }
@@ -55,14 +61,17 @@ public class ProductServiceImpl implements ProductService {
             // return new ResponseEntity<>("Product with id " + id + " not found", HttpStatus.NOT_FOUND);
         }
 
+        // product -> productResponseDTO
         Product product = productRepository.findById(id).get();
-        ProductResponseDTO productResponseDTO = new ProductResponseDTO(
-                product.getId(),
-                product.getName(),
-                product.getQuantity(),
-                product.getPrice(),
-                product.getDiscountPercent()
-        );
+        ProductResponseDTO productResponseDTO = productMapper.toProductResponseDTOFromProduct(product);
+
+//        ProductResponseDTO productResponseDTO = new ProductResponseDTO(
+//                product.getId(),
+//                product.getName(),
+//                product.getQuantity(),
+//                product.getPrice(),
+//                product.getDiscountPercent()
+//        );
 
         return new ResponseEntity<>(productResponseDTO, HttpStatus.OK);
     }
@@ -71,22 +80,26 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ResponseEntity<ProductResponseDTO> createNewProduct(ProductRequestDTO productRequestDTO) {
         log.info("Creating new product with name: {}", productRequestDTO.getName());
-        Product product = new Product(
-                productRequestDTO.getName(),
-                productRequestDTO.getQuantity(),
-                productRequestDTO.getPrice(),
-                productRequestDTO.getDiscountPercent()
-        );
+
+//        Product product = new Product(
+//                productRequestDTO.getName(),
+//                productRequestDTO.getQuantity(),
+//                productRequestDTO.getPrice(),
+//                productRequestDTO.getDiscountPercent()
+//        );
+        Product product = productMapper.toProductFromProductRequestDTO(productRequestDTO);
 
         productRepository.save(product);
 
-        ProductResponseDTO productResponseDTO = new ProductResponseDTO(
-                product.getId(),
-                product.getName(),
-                product.getQuantity(),
-                product.getPrice(),
-                product.getDiscountPercent()
-        );
+        ProductResponseDTO productResponseDTO = productMapper.toProductResponseDTOFromProduct(product);
+
+//        ProductResponseDTO productResponseDTO = new ProductResponseDTO(
+//                product.getId(),
+//                product.getName(),
+//                product.getQuantity(),
+//                product.getPrice(),
+//                product.getDiscountPercent()
+//        );
 
         log.info("Product created: {}", productResponseDTO.getName());
         return new ResponseEntity<>(productResponseDTO, HttpStatus.CREATED);
@@ -103,13 +116,15 @@ public class ProductServiceImpl implements ProductService {
         Product product = productRepository.findById(id).get();
         productRepository.deleteById(id);
 
-        ProductResponseDTO productResponseDTO = new ProductResponseDTO(
-                product.getId(),
-                product.getName(),
-                product.getQuantity(),
-                product.getPrice(),
-                product.getDiscountPercent()
-        );
+        ProductResponseDTO productResponseDTO = productMapper.toProductResponseDTOFromProduct(product);
+
+//        ProductResponseDTO productResponseDTO = new ProductResponseDTO(
+//                product.getId(),
+//                product.getName(),
+//                product.getQuantity(),
+//                product.getPrice(),
+//                product.getDiscountPercent()
+//        );
 
         log.info("Product deleted: {} !", productResponseDTO.getName());
         return new ResponseEntity<>(productResponseDTO, HttpStatus.OK);
