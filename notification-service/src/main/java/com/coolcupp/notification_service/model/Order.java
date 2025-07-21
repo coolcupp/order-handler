@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 @Entity
@@ -34,63 +33,4 @@ public class Order {
         this.userId = userId;
         this.totalPrice = totalPrice;
     }
-
-//    public Order() {
-
-//    }
-
-//    public UUID getId() {
-//        return id;
-//    }
-//
-//    public void setId(UUID id) {
-//        this.id = id;
-//    }
-//
-//    public Long getUserId() {
-//        return userId;
-//    }
-//
-//    public void setUserId(Long userId) {
-//        this.userId = userId;
-//    }
-//
-//    public BigDecimal getTotalPrice() {
-//        return totalPrice;
-//    }
-//
-//    public void setTotalPrice(BigDecimal totalPrice) {
-//        this.totalPrice = totalPrice;
-//    }
-//
-//    public List<OrderItem> getOrderItems() {
-//        return orderItems;
-//    }
-//
-//    public void setOrderItems(List<OrderItem> orderItems) {
-//        this.orderItems = orderItems;
-//    }
-//
-//    @Override
-//    public boolean equals(Object o) {
-//        if (this == o) return true;
-//        if (o == null || getClass() != o.getClass()) return false;
-//        Order order = (Order) o;
-//        return Objects.equals(id, order.id) && Objects.equals(userId, order.userId) && Objects.equals(totalPrice, order.totalPrice) && Objects.equals(orderItems, order.orderItems);
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        return Objects.hash(id, userId, totalPrice, orderItems);
-//    }
-//
-//    @Override
-//    public String toString() {
-//        return "Order{" +
-//                "id=" + id +
-//                ", userId=" + userId +
-//                ", totalPrice=" + totalPrice +
-//                ", orderItems=" + orderItems +
-//                '}';
-//    }
 }

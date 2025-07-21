@@ -3,8 +3,6 @@ package com.coolcupp.notification_service.handler;
 import com.coolcupp.common_lib.event.KafkaCreateOrderEvent;
 import com.coolcupp.notification_service.service.OrderService;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaHandler;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;

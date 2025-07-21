@@ -11,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -28,14 +27,8 @@ public class InventoryServiceGRPCClient {
 
     public ProductTotalResponse CheckAvailability(List<OrderItemDTO> orderItemDTOList) {
         log.info("Start checking availability, sending request to InventoryService....");
+
         // build request
-        // todo mapper (OrderItemMapper)
-//        List<ProductRequestItem> productRequestItemList = orderItemDTOList.stream()
-//                .map(orderItemDTO -> ProductRequestItem.newBuilder()
-//                        .setId(orderItemDTO.getProductId())
-//                        .setRequestedQuantity(orderItemDTO.getQuantityToOrder())
-//                        .build())
-//                .toList();
         List<ProductRequestItem> productRequestItemList = orderItemMapper
                 .toProductRequestItemListFromOrderItemDTOList(orderItemDTOList);
 

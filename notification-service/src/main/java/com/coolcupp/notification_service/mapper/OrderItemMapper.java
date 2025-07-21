@@ -33,6 +33,7 @@ public class OrderItemMapper {
     }
 
 
+    // List<KafkaCreateOrderEventItem> -> List<OrderItem>
     public List<OrderItem> toOrderItemListFromKafkaEventItemList(Order order,
             List<KafkaCreateOrderEventItem> kafkaCreateOrderEventItems) {
 
@@ -47,5 +48,4 @@ public class OrderItemMapper {
                 ))
                 .toList();
     }
-
 }

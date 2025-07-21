@@ -11,7 +11,6 @@ import java.util.UUID;
 
 @Service
 public interface OrderService {
-
     ResponseEntity<List<OrderResponseDTO>> getAllOrders();
 
     ResponseEntity<List<OrderItemResponseDTO>> getOrderItemsByOrderId(UUID orderId);

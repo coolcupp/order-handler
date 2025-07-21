@@ -18,7 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -50,22 +49,6 @@ public class OrderServiceImpl implements OrderService {
             throw new NotFoundException("No orders found");
         }
 
-//        List<OrderResponseDTO> orderResponseDTOList = orders.stream()
-//                .map(order -> new OrderResponseDTO(
-//                        order.getId(),
-//                        order.getUserId(),
-//                        order.getTotalPrice(),
-//                        order.getOrderItems().stream()
-//                                .map(orderItem -> new OrderItemResponseDTO(
-//                                        orderItem.getProductId(),
-//                                        orderItem.getQuantity(),
-//                                        orderItem.getPrice(),
-//                                        orderItem.getDiscountPercent(),
-//                                        orderItem.getTotalItemPrice()
-//                                )).toList()
-//                ))
-//                .toList();
-
         // order -> order response dto
         List<OrderResponseDTO> orderResponseDTOList = orderMapper
                 .toOrderResponseDTOListFromOrderList(orders);
@@ -82,17 +65,6 @@ public class OrderServiceImpl implements OrderService {
             log.error("No order items found for order with ID: {}", orderId);
             throw new NotFoundException("No order items found for order with ID: " + orderId);
         }
-
-
-//        List<OrderItemResponseDTO> orderItemResponseDTOList = orderItems.stream()
-//                .map(orderItem -> new OrderItemResponseDTO(
-//                        orderItem.getProductId(),
-//                        orderItem.getQuantity(),
-//                        orderItem.getPrice(),
-//                        orderItem.getDiscountPercent(),
-//                        orderItem.getTotalItemPrice()
-//                ))
-//                .toList();
 
         // order item list -> order item response dto list
         List<OrderItemResponseDTO> orderItemResponseDTOList = orderItemMapper
@@ -112,17 +84,6 @@ public class OrderServiceImpl implements OrderService {
             log.error("No order items found for user with ID: {}", userId);
             throw new NotFoundException("No order items found for user with ID: " + userId);
         }
-
-//        List<OrderItemResponseDTO> orderItemResponseDTOList = orderItems.stream()
-//                .map(orderItem -> new OrderItemResponseDTO(
-//                        orderItem.getProductId(),
-//                        orderItem.getQuantity(),
-//                        orderItem.getPrice(),
-//                        orderItem.getDiscountPercent(),
-//                        orderItem.getTotalItemPrice()
-//                ))
-//                .toList();
-
         // List<OrderItem> -> List<OrderItemResponseDTO>
         List<OrderItemResponseDTO> orderItemResponseDTOList = orderItemMapper
                 .toOrderItemResponseDTOListFromOrderItemList(orderItems);
@@ -153,17 +114,6 @@ public class OrderServiceImpl implements OrderService {
         );
         orderRepository.save(order);
         log.info("Order with ID: {} CREATED AND SAVED SUCCESSFULLY", orderId);
-
-//        List<OrderItem> orderItems = kafkaCreateOrderEventItems.stream()
-//                .map(kafkaCreateOrderEventItem -> new OrderItem(
-//                        order,
-//                        kafkaCreateOrderEventItem.getProductId(),
-//                        kafkaCreateOrderEventItem.getQuantityToOrder(),
-//                        kafkaCreateOrderEventItem.getPrice(),
-//                        kafkaCreateOrderEventItem.getDiscountPercent(),
-//                        kafkaCreateOrderEventItem.getTotalItemPrice()
-//                ))
-//                .toList();
 
         // List<KafkaCreateOrderEventItems> -> List<OrderItem>
         List<OrderItem> orderItems = orderItemMapper.toOrderItemListFromKafkaEventItemList(order,

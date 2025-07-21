@@ -35,17 +35,6 @@ public class ProductServiceImpl implements ProductService {
             throw new NotFoundException("No products found");
         }
 
-        // list of products -> list of product dto
-        // todo mapper
-//        List<ProductResponseDTO> productResponseDTOList = products.stream()
-//                .map(product -> new ProductResponseDTO(
-//                        product.getId(),
-//                        product.getName(),
-//                        product.getQuantity(),
-//                        product.getPrice(),
-//                        product.getDiscountPercent()
-//                ))
-//                .toList();
         List<ProductResponseDTO> productResponseDTOList =
                 productMapper.toProductResponseDTOListFromProductList(products);
 
@@ -58,20 +47,11 @@ public class ProductServiceImpl implements ProductService {
         if (!productRepository.existsById(id)) {
             log.warn("Product not found with id: {}", id);
             throw new NotFoundException("Product not found with id: " + id);
-            // return new ResponseEntity<>("Product with id " + id + " not found", HttpStatus.NOT_FOUND);
         }
 
         // product -> productResponseDTO
         Product product = productRepository.findById(id).get();
         ProductResponseDTO productResponseDTO = productMapper.toProductResponseDTOFromProduct(product);
-
-//        ProductResponseDTO productResponseDTO = new ProductResponseDTO(
-//                product.getId(),
-//                product.getName(),
-//                product.getQuantity(),
-//                product.getPrice(),
-//                product.getDiscountPercent()
-//        );
 
         return new ResponseEntity<>(productResponseDTO, HttpStatus.OK);
     }
@@ -81,29 +61,16 @@ public class ProductServiceImpl implements ProductService {
     public ResponseEntity<ProductResponseDTO> createNewProduct(ProductRequestDTO productRequestDTO) {
         log.info("Creating new product with name: {}", productRequestDTO.getName());
 
-//        Product product = new Product(
-//                productRequestDTO.getName(),
-//                productRequestDTO.getQuantity(),
-//                productRequestDTO.getPrice(),
-//                productRequestDTO.getDiscountPercent()
-//        );
         Product product = productMapper.toProductFromProductRequestDTO(productRequestDTO);
 
         productRepository.save(product);
 
         ProductResponseDTO productResponseDTO = productMapper.toProductResponseDTOFromProduct(product);
 
-//        ProductResponseDTO productResponseDTO = new ProductResponseDTO(
-//                product.getId(),
-//                product.getName(),
-//                product.getQuantity(),
-//                product.getPrice(),
-//                product.getDiscountPercent()
-//        );
-
         log.info("Product created: {}", productResponseDTO.getName());
         return new ResponseEntity<>(productResponseDTO, HttpStatus.CREATED);
     }
+
 
     @Override
     public ResponseEntity<ProductResponseDTO> deleteProductById(Long id) {
@@ -117,14 +84,6 @@ public class ProductServiceImpl implements ProductService {
         productRepository.deleteById(id);
 
         ProductResponseDTO productResponseDTO = productMapper.toProductResponseDTOFromProduct(product);
-
-//        ProductResponseDTO productResponseDTO = new ProductResponseDTO(
-//                product.getId(),
-//                product.getName(),
-//                product.getQuantity(),
-//                product.getPrice(),
-//                product.getDiscountPercent()
-//        );
 
         log.info("Product deleted: {} !", productResponseDTO.getName());
         return new ResponseEntity<>(productResponseDTO, HttpStatus.OK);

@@ -4,7 +4,6 @@ import com.coolcupp.inventoryService.grpc.ProductRequestItem;
 import com.coolcupp.order_service.dto.OrderDTO.OrderItemDTO;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Component

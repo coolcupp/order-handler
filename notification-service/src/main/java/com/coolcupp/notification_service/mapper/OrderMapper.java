@@ -15,7 +15,6 @@ public class OrderMapper {
         if (orders == null || orders.isEmpty()) {
             return null;
         }
-
         return orders.stream()
                 .map(order -> new OrderResponseDTO(
                         order.getId(),

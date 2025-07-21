@@ -8,7 +8,6 @@ import com.coolcupp.order_service.security.securityDTO.AppUserLoginRequestDTO;
 import com.coolcupp.order_service.security.securityDTO.AppUserRegisterRequestDTO;
 import com.coolcupp.order_service.security.securityDTO.AppUserRegisterResponseDTO;
 import com.coolcupp.order_service.model.AppUser;
-import com.coolcupp.order_service.model.Role;
 import com.coolcupp.order_service.repository.AppUserRepository;
 import com.coolcupp.order_service.security.model.RefreshToken;
 import com.coolcupp.order_service.security.securityDTO.JwtResponseDTO;
@@ -31,17 +30,17 @@ import java.util.List;
 public class AppUserServiceImpl implements AppUserService {
 
     private final AppUserRepository appUserRepository;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
     private final AppUserMapper appUserMapper;
 
-    public AppUserServiceImpl(AppUserRepository appUserRepository, BCryptPasswordEncoder bCryptPasswordEncoder,
-                              AuthenticationManager authenticationManager, JwtService jwtService,
-                              RefreshTokenService refreshTokenService, AppUserMapper appUserMapper) {
+    public AppUserServiceImpl(AppUserRepository appUserRepository,
+                              AuthenticationManager authenticationManager,
+                              JwtService jwtService,
+                              RefreshTokenService refreshTokenService,
+                              AppUserMapper appUserMapper) {
         this.appUserRepository = appUserRepository;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
         this.refreshTokenService = refreshTokenService;
@@ -56,17 +55,6 @@ public class AppUserServiceImpl implements AppUserService {
             log.info("No app users found in DB");
             throw new NotFoundException("No app users found in DB");
         }
-        // list of app users -> list of app user dto's
-        // todo List<appUser> -> List<appUserResponseDTO>
-//        List<AppUserResponseDTO> appUserResponseDTOList = appUsers.stream()
-//                .map(appUser -> new AppUserResponseDTO(
-//                        appUser.getId(),
-//                        appUser.getUsername(),
-//                        appUser.getEmail(),
-//                        appUser.getRole()
-//                ))
-//                .toList();
-
         List<AppUserResponseDTO> appUserResponseDTOList =
                 appUserMapper.toAppUserResponseDTOListFromAppUserList(appUsers);
 
@@ -148,22 +136,12 @@ public class AppUserServiceImpl implements AppUserService {
     public ResponseEntity<AppUserRegisterResponseDTO> registerNewUser(AppUserRegisterRequestDTO
                                                                                   appUserRegisterRequestDTO) {
         log.info("Start registration new user with username: {} ...", appUserRegisterRequestDTO.getUsername());
-//        AppUser appUser = new AppUser(
-//                appUserRegisterRequestDTO.getUsername(),
-//                bCryptPasswordEncoder.encode(appUserRegisterRequestDTO.getPassword()), // encode password
-//                appUserRegisterRequestDTO.getEmail(),
-//                Role.USER
-//        );
+
         AppUser appUser = appUserMapper.toAppUserFromRegisterRequestDTO(appUserRegisterRequestDTO);
 
         // saving user to DB
         appUserRepository.save(appUser);
-        // todo appUser -> appUserRegisterResponseDTO
-//        AppUserRegisterResponseDTO appUserResponseDTO = new AppUserRegisterResponseDTO(
-//                appUser.getId(),
-//                appUser.getUsername(),
-//                appUser.getEmail()
-//        );
+
         AppUserRegisterResponseDTO appUserRegisterResponseDTO =
                 appUserMapper.toAppUserRegisterResponseDTOFromAppUser(appUser);
 
