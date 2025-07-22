@@ -2,6 +2,7 @@ package com.coolcupp.common_lib.exception_handling.handler;
 
 import com.coolcupp.common_lib.exception_handling.dto.CustomExceptionResponseDTO;
 import com.coolcupp.common_lib.exception_handling.exception.InvalidRefreshTokenException;
+import com.coolcupp.common_lib.exception_handling.exception.InventoryUnavailableException;
 import com.coolcupp.common_lib.exception_handling.exception.NotEnoughItemsInStorageException;
 import com.coolcupp.common_lib.exception_handling.exception.NotFoundException;
 import org.springframework.http.HttpStatus;
@@ -46,6 +47,18 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new CustomExceptionResponseDTO(
                 HttpStatus.BAD_REQUEST.value(),
+                LocalDateTime.now(),
+                exception.getMessage(),
+                request.getDescription(false)
+        ));
+    }
+
+    @ExceptionHandler(InventoryUnavailableException.class)
+    public ResponseEntity<CustomExceptionResponseDTO> handleInventoryUnavailableException(
+            InventoryUnavailableException exception, WebRequest request) {
+
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(new CustomExceptionResponseDTO(
+                HttpStatus.SERVICE_UNAVAILABLE.value(),
                 LocalDateTime.now(),
                 exception.getMessage(),
                 request.getDescription(false)
